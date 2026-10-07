@@ -336,7 +336,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 3 },\r\n]))"
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 1 },\r\n]))"
                     ]
                   }
                 }
@@ -383,7 +383,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 3 },\r\n]))"
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 1 },\r\n]))"
                     ]
                   }
                 }
@@ -418,6 +418,53 @@
         {
           "name": "frete",
           "item": [
+            {
+              "name": "VS-21 POST Cobrar frete abaixo do limite",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o frete de 19.90 é cobrado\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.false;\r\n    pm.expect(responseBody.frete).to.equal(19.90);\r\n})\r\n\r\npm.test(\"faltam 0.10 para o frete grátis\", function () {\r\n    pm.expect(responseBody.valorFaltanteFreteGratis).to.equal(0.10);\r\n})\r\n\r\npm.test(\"o total do pedido é 219.80\", function () {\r\n    pm.expect(responseBody.total).to.equal(219.80);\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P004\", \"quantidade\": 1 },\r\n    { \"produtoId\": \"P008\", \"quantidade\": 3 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
               "name": "VS-22 POST Conceder frete grátis no valor limite",
               "event": [
@@ -473,7 +520,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 200 gerando um desconto de 20\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(200)\r\n    pm.expect(responseBody.desconto).to.equal(20);\r\n})\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto\r\n    );\r\n})"
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 209.90 gerando um desconto de 20.99\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(209.90)\r\n    pm.expect(responseBody.desconto).to.equal(20.99);\r\n})\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto\r\n    );\r\n})"
                     ]
                   }
                 },
@@ -482,7 +529,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 2 },\r\n]))"
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 1 },\r\n    { \"produtoId\": \"P008\", \"quantidade\": 3 },\r\n]))"
                     ]
                   }
                 }
@@ -863,7 +910,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 200.00 gerando um desconto de 20.00\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(200.00)\r\n    pm.expect(responseBody.desconto).to.equal(20.00);\r\n})\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"o total do pedido é 180.00\", function () {\r\n    pm.expect(responseBody.total).to.equal(180.00);\r\n})"
+                      "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 209.90 gerando um desconto de 20.99\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(209.90)\r\n    pm.expect(responseBody.desconto).to.equal(20.99);\r\n})\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"o total do pedido é 180.00\", function () {\r\n    pm.expect(responseBody.total).to.equal(188.91);\r\n})"
                     ]
                   }
                 },
@@ -872,7 +919,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 2 },\r\n]))"
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 1 },\r\n    { \"produtoId\": \"P008\", \"quantidade\": 3 },\r\n]))"
                     ]
                   }
                 }
