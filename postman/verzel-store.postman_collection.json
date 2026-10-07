@@ -1708,6 +1708,52 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "VS-75 POST Rejeitar pedido com quantidade de produtos acima do limite",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 422\", function () {\n    pm.response.to.have.status(422);\n});\n\nconst responseBody = pm.response.json();\n\npm.test(\"o erro retornado tem o código 'QUANTIDADE_MAXIMA_EXCEDIDA'\", function () {\n    pm.expect(responseBody).haveOwnProperty('erro')\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\n    pm.expect(responseBody.erro.codigo).to.eql('QUANTIDADE_MAXIMA_EXCEDIDA')\n})\n\npm.test(\"o erro aponta para o campo de quantidade\", function () {\n    pm.expect(responseBody.erro).haveOwnProperty('campo')\n    pm.expect(responseBody.erro.campo).to.include('quantidade')\n})\n\npm.test(\"nenhum pedido é criado\", function () {\n    pm.expect(responseBody).to.not.have.property(\"numero\");\n});"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": Number(pm.collectionVariables.get(\"limiteQuantidade\")) + 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         }
