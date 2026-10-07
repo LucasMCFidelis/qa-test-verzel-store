@@ -1,0 +1,1722 @@
+{
+  "info": {
+    "_postman_id": "989c6d8d-ef3d-4583-bf90-52ec4d1bf912",
+    "name": "verzel-store",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36785755"
+  },
+  "item": [
+    {
+      "name": "busca-de-produtos",
+      "item": [
+        {
+          "name": "VS-1 GET Listar os produtos disponíveis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst produtos = pm.response.json();\r\n\r\npm.test(\"a lista de produtos não está vazia\", function () {\r\n    pm.expect(Array.isArray(produtos)).to.be.true;\r\n    pm.expect(produtos.length).to.be.greaterThan(0);\r\n})\r\n\r\npm.test(\"cada produto possui os campos 'id, nome, descricao, categoria, preco'\", function () {\r\n    produtos.forEach(produto => {\r\n        pm.expect(produto).to.have.all.keys('id', 'nome', 'descricao', 'categoria', 'preco');\r\n        pm.expect(produto.preco).to.be.greaterThan(0);\r\n    })\r\n})\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produtos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "VS-2 DELETE Rejeitar método não permitido na listagem de produtos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"a resposta tem status 405\", function () {\r\n    pm.response.to.have.status(405);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'METODO_NAO_PERMITIDO'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('METODO_NAO_PERMITIDO')\r\n})"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produtos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produtos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "VS-3 GET Consultar produto existente pelo id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst produtoIdRequest = pm.collectionVariables.get(\"produtoId\")\r\nconst produto = pm.response.json();\r\n\r\npm.test(`o produto retornado tem o id '${produtoIdRequest}'`, function () {\r\n    pm.expect(produto.id).to.equal(produtoIdRequest);\r\n})\r\n\r\npm.test(\"o produto possui os campos 'id, nome, descricao, categoria, preco'\", function () {\r\n    pm.expect(produto).to.have.all.keys('id', 'nome', 'descricao', 'categoria', 'preco');\r\n    pm.expect(produto.preco).to.be.greaterThan(0);\r\n})\r\n"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"produtoId\", \"P001\");"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produtos/{{produtoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produtos",
+                "{{produtoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "VS-4 GET Rejeitar consulta de produto inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"a resposta tem status 404\", function () {\r\n    pm.response.to.have.status(404);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'PRODUTO_NAO_ENCONTRADO'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('PRODUTO_NAO_ENCONTRADO')\r\n})\r\n\r\npm.test(\"valida que a mensagem mensagem de erro informa que o produto não foi encontrado'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('mensagem')\r\n    pm.expect(responseBody.erro.mensagem).to.include(`Produto ${pm.collectionVariables.get(\"produtoIdInexistente\")} não encontrado`)\r\n})"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"produtoIdInexistente\", \"P999\");"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produtos/{{produtoIdInexistente}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produtos",
+                "{{produtoIdInexistente}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "VS-53 GET Fornecer listagem ao realizar consulta de produto sem informar o id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst produtos = pm.response.json();\r\n\r\npm.test(\"a lista de produtos não está vazia\", function () {\r\n    pm.expect(Array.isArray(produtos)).to.be.true;\r\n    pm.expect(produtos.length).to.be.greaterThan(0);\r\n})\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produtos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produtos",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "calcular-carrinho",
+      "item": [
+        {
+          "name": "cupons",
+          "item": [
+            {
+              "name": "VS-5 POST Aplicar cupom BEMVINDO10 em carrinho com um item",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(100)\r\n    pm.expect(responseBody.desconto).to.equal(10);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})\r\n"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    {\r\n        \"produtoId\": \"P005\",\r\n        \"quantidade\": 1\r\n    },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-6 POST Aplicar cupom BEMVINDO10 em carrinho com múltiplos itens",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o total de cada item é o preço unitário vezes a quantidade\", function () {\r\n    responseBody.itens.forEach(item => {\r\n        pm.expect(item.total).to.equal(item.precoUnitario * item.quantidade);\r\n    })\r\n})\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 239.70 gerando um desconto de 23.97\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(239.70)\r\n    pm.expect(responseBody.desconto).to.equal(23.97);\r\n})\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})\r\n"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P002\", \"quantidade\": 1 },\r\n    { \"produtoId\": \"P004\", \"quantidade\": 2 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-7 POST Aplicar cupom em minúsculas",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 179.70 gerando um desconto de 17.97\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(179.70)\r\n    pm.expect(responseBody.desconto).to.equal(17.97);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})\r\n"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 3 },\r\n]))\r\npm.collectionVariables.set(\r\n    \"cupomBemVindoLowerCase\",\r\n    pm.collectionVariables.get(\"cupomBemVindo\").toLowerCase()\r\n)"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindoLowerCase}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-11 POST Rejeitar cupom inexistente",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é recusado com a mensagem 'Cupom inválido'\", function () {\r\n    pm.expect(responseBody.cupom.mensagem).to.contain(\"Cupom inválido\");\r\n})\r\n\r\npm.test(\"nenhum desconto é aplicado\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.false;\r\n    pm.expect(responseBody.desconto).to.equal(0);\r\n})\r\n"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 3 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomInexistente}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-15 POST Rejeitar cupom expirado",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é recusado com a mensagem 'Cupom expirado'\", function () {\r\n    pm.expect(responseBody.cupom.mensagem).to.contain(\"Cupom expirado\");\r\n})\r\n\r\npm.test(\"nenhum desconto é aplicado\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.false;\r\n    pm.expect(responseBody.desconto).to.equal(0);\r\n})\r\n"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 3 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomExpirado}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "frete",
+          "item": [
+            {
+              "name": "VS-22 POST Conceder frete grátis no valor limite",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"não falta valor para o frete grátis\", function () {\r\n    pm.expect(responseBody.valorFaltanteFreteGratis).to.equal(0);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 2 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-24 POST Manter frete grátis quando o desconto reduz o valor abaixo do limite",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 200 gerando um desconto de 20\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(200)\r\n    pm.expect(responseBody.desconto).to.equal(20);\r\n})\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto\r\n    );\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 2 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-25 POST Calcular o faltante sobre o subtotal antes do desconto",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(100)\r\n    pm.expect(responseBody.desconto).to.equal(10);\r\n})\r\n\r\npm.test(\"faltam 100.00 para o frete grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.false;\r\n    pm.expect(responseBody.valorFaltanteFreteGratis).to.equal(100);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-26 POST Aplicar o desconto apenas sobre os produtos, sem reduzir o frete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(100)\r\n    pm.expect(responseBody.desconto).to.equal(10);\r\n})\r\n\r\npm.test(\"o frete de 19.90 é cobrado\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.false;\r\n    pm.expect(responseBody.frete).to.equal(19.90);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "quantidade-por-produto",
+          "item": [
+            {
+              "name": "VS-28 POST Aceitar quantidade no limite superior",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o subtotal é 299.50\", function () {\r\n    pm.expect(responseBody.subtotal).to.equal(299.50);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": Number(pm.collectionVariables.get(\"limiteQuantidade\")) },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-29 POST Rejeitar quantidade acima do limite",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'QUANTIDADE_MAXIMA_EXCEDIDA'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('QUANTIDADE_MAXIMA_EXCEDIDA')\r\n})\r\n\r\npm.test(\"valida que a mensagem de erro informa que a quantidade foi excedida\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('mensagem')\r\n    pm.expect(responseBody.erro.mensagem).to.include(\"A quantidade deve ser um número inteiro menor ou igual a 5\")\r\n})\r\n\r\npm.test(\"o erro aponta para o campo 'itens[0].quantidade'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campo')\r\n    pm.expect(responseBody.erro.campo).to.eql('itens[0].quantidade')\r\n})\r\n\r\npm.test(\"nenhum valor é calculado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"total\");\r\n});"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": Number(pm.collectionVariables.get(\"limiteQuantidade\")) + 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-30 POST Rejeitar quantidade zero",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'QUANTIDADE_INVALIDA'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('QUANTIDADE_INVALIDA')\r\n})\r\n\r\npm.test(\"valida que a mensagem de erro informa que a quantidade é invalida\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('mensagem')\r\n    pm.expect(responseBody.erro.mensagem).to.include(\"A quantidade deve ser um número inteiro maior ou igual a 1\")\r\n})\r\n\r\npm.test(\"o erro aponta para o campo 'itens[0].quantidade'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campo')\r\n    pm.expect(responseBody.erro.campo).to.eql('itens[0].quantidade')\r\n})\r\n\r\npm.test(\"nenhum valor é calculado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"total\");\r\n});"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 0 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-36 POST Rejeitar o mesmo produto repetido na lista",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'ITEM_DUPLICADO'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('ITEM_DUPLICADO')\r\n})\r\n\r\npm.test(\"valida que a mensagem de erro informa que existe um item duplicado\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('mensagem')\r\n    pm.expect(responseBody.erro.mensagem).to.include(\"O produto P001 aparece mais de uma vez\")\r\n})\r\n\r\npm.test(\"nenhum valor é calculado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"total\");\r\n});"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P001\", \"quantidade\": 3 },\r\n    { \"produtoId\": \"P001\", \"quantidade\": 3 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/carrinho/calcular",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "carrinho",
+                    "calcular"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pedidos",
+      "item": [
+        {
+          "name": "cupons",
+          "item": [
+            {
+              "name": "VS-39 POST Confirmar pedido com cupom BEMVINDO10",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(100.00)\r\n    pm.expect(responseBody.desconto).to.equal(10.00);\r\n})\r\n\r\npm.test(\"o frete de 19.90 é cobrado\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.false;\r\n    pm.expect(responseBody.frete).to.equal(19.90);\r\n})\r\n\r\npm.test(\"o total do pedido é 109.90\", function () {\r\n    pm.expect(responseBody.total).to.equal(109.90);\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-40 POST Confirmar pedido com frete grátis quando o desconto reduz o valor abaixo do limite",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o cupom é aplicado ao subtotal de 200.00 gerando um desconto de 20.00\", function () {\r\n    pm.expect(responseBody.cupom.aplicado).to.be.true;\r\n    pm.expect(responseBody.subtotal).to.equal(200.00)\r\n    pm.expect(responseBody.desconto).to.equal(20.00);\r\n})\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"o total do pedido é 180.00\", function () {\r\n    pm.expect(responseBody.total).to.equal(180.00);\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 2 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-42 POST Rejeitar pedido com cupom inexistente",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'CUPOM_INVALIDO'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('CUPOM_INVALIDO')\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomInexistente}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-43 POST Rejeitar pedido com cupom expirado",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'CUPOM_EXPIRADO'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('CUPOM_EXPIRADO')\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomExpirado}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "dados-do-cliente",
+          "item": [
+            {
+              "name": "nome",
+              "item": [
+                {
+                  "name": "VS-44 POST Rejeitar nome sem sobrenome [Maria]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'nome'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['nome']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria\",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"01310-100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-44 POST Rejeitar nome sem sobrenome [Maria com espaço no fim]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'nome'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['nome']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria \",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"01310-100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "email",
+              "item": [
+                {
+                  "name": "VS-46 POST Rejeitar e-mail com formato inválido [sem @]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'email'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['email']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria.exemplo.com\",\r\n    \"cep\": \"01310-100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-46 POST Rejeitar e-mail com formato inválido [sem domínio]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'email'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['email']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria@\",\r\n    \"cep\": \"01310-100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-46 POST Rejeitar e-mail com formato inválido [sem usuário]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'email'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['email']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"@exemplo.com\",\r\n    \"cep\": \"01310-100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-46 POST Rejeitar e-mail com formato inválido [espaço interno]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'email'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['email']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria silva@exemplo.com\",\r\n    \"cep\": \"01310-100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "cep",
+              "item": [
+                {
+                  "name": "VS-48 POST Aceitar CEP com ou sem hífen e retornar sem hífen [sem hífen]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o CEP retornado é '01310100'\", function () {\r\n    pm.expect(responseBody.cliente.cep).to.equal(\"01310100\");\r\n})"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"01310100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-48 POST Aceitar CEP com ou sem hífen e retornar sem hífen [com hífen]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o CEP retornado é '01310100'\", function () {\r\n    pm.expect(responseBody.cliente.cep).to.equal(\"01310100\");\r\n})"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"01310-100\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-49 POST Rejeitar CEP com quantidade de dígitos diferente de 8 [7 dígitos]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'cep'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['cep']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"0131010\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-49 POST Rejeitar CEP com quantidade de dígitos diferente de 8 [9 dígitos]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'cep'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['cep']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"013101000\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-49 POST Rejeitar CEP com quantidade de dígitos diferente de 8 [7 dígitos com hífen]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'cep'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['cep']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"01310-10\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "VS-49 POST Rejeitar CEP com quantidade de dígitos diferente de 8 [9 dígitos com hífen]",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"a resposta tem status 422\", function () {\r\n    pm.response.to.have.status(422);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o erro retornado tem o código 'DADOS_INVALIDOS'\", function () {\r\n    pm.expect(responseBody).haveOwnProperty('erro')\r\n    pm.expect(responseBody.erro).haveOwnProperty('codigo')\r\n    pm.expect(responseBody.erro.codigo).to.eql('DADOS_INVALIDOS')\r\n})\r\n\r\npm.test(\"o erro indica os campos inválidos 'cep'\", function () {\r\n    pm.expect(responseBody.erro).haveOwnProperty('campos')\r\n    const campos = responseBody.erro.campos;\r\n    const camposInvalidos = (Array.isArray(campos)\r\n        ? campos.map(campo => typeof campo === \"string\" ? campo : campo.campo)\r\n        : Object.keys(campos)\r\n    ).map(campo => campo.replace(/^cliente\\./, \"\"));\r\n    pm.expect(camposInvalidos).to.eql(['cep']);\r\n})\r\n\r\npm.test(\"nenhum pedido é criado\", function () {\r\n    pm.expect(responseBody).to.not.have.property(\"numero\");\r\n});"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))\r\npm.collectionVariables.set(\"cliente\", JSON.stringify({\r\n    \"nome\": \"Maria Silva\",\r\n    \"email\": \"maria@exemplo.com\",\r\n    \"cep\": \"01310-1000\"\r\n}))"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"cliente\": {{cliente}},\r\n    \"itens\": {{itensArray}}\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/pedidos",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "pedidos"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "confirmacao-do-pedido",
+          "item": [
+            {
+              "name": "VS-37 POST Confirmar pedido sem cupom abaixo do limite de frete grátis",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o pedido é confirmado com número no formato 'VZ-000000'\", function () {\r\n    pm.expect(responseBody).to.have.property(\"numero\");\r\n    pm.expect(responseBody.numero).to.match(/^VZ-\\d{6}$/);\r\n});\r\n\r\npm.test(\"a data de criação do pedido é informada\", function () {\r\n    pm.expect(responseBody).to.have.property(\"criadoEm\");\r\n    pm.expect(responseBody.criadoEm).to.be.a(\"string\");\r\n    pm.expect(Date.parse(responseBody.criadoEm)).to.not.be.NaN;\r\n});\r\n\r\npm.test(\"o frete de 19.90 é cobrado\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.false;\r\n    pm.expect(responseBody.frete).to.equal(19.90);\r\n})\r\n\r\npm.test(\"valida o calculo do total\", function () {\r\n    pm.expect(responseBody.total).to.equal(\r\n        responseBody.subtotal - responseBody.desconto + responseBody.frete\r\n    );\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 1 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "VS-38 POST Confirmar pedido com resumo de valores igual ao do cálculo",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 201\", function () {\n    pm.response.to.have.status(201);\n});\n\nconst responseBody = pm.response.json();\n\npm.test(\"o resumo de valores é idêntico ao do cálculo do mesmo carrinho\", function (done) {\n    const itens = JSON.parse(pm.collectionVariables.get(\"itensArray\"));\n    const cupom = pm.collectionVariables.get(\"cupomBemVindo\");\n\n    pm.sendRequest({\n        url: pm.environment.get(\"base_url\") + \"/carrinho/calcular\",\n        method: \"POST\",\n        header: {\n            \"Content-Type\": \"application/json\"\n        },\n        body: {\n            mode: \"raw\",\n            raw: JSON.stringify({\n                itens,\n                cupom\n            })\n        }\n    }, function (err, response) {\n\n        if (err) {\n            return done(err);\n        }\n\n        const responseCalc = response.json();\n\n        try {\n            pm.expect(responseCalc.total).to.equal(responseBody.total);\n            pm.expect(responseCalc.subtotal).to.equal(responseBody.subtotal);\n            pm.expect(responseCalc.desconto).to.equal(responseBody.desconto);\n            pm.expect(responseCalc.frete).to.equal(responseBody.frete);\n\n            done();\n\n        } catch (e) {\n            done(e);\n        }\n    });\n});"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P002\", \"quantidade\": 1 },\r\n    { \"produtoId\": \"P004\", \"quantidade\": 2 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}},\r\n    \"cupom\": \"{{cupomBemVindo}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "pm.collectionVariables.set(\"cupomBemVindo\", \"BEMVINDO10\")\r",
+          "pm.collectionVariables.set(\"cupomExpirado\", \"VERAO2026\")\r",
+          "pm.collectionVariables.set(\"cupomInexistente\", \"PROMO50\")\r",
+          "pm.collectionVariables.set(\"limiteQuantidade\", 5)"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "produtoId",
+      "value": ""
+    },
+    {
+      "key": "produtoIdInexistente",
+      "value": ""
+    },
+    {
+      "key": "cupomBemVindo",
+      "value": ""
+    },
+    {
+      "key": "itensArray",
+      "value": ""
+    },
+    {
+      "key": "cupomBemVindoLowerCase",
+      "value": ""
+    },
+    {
+      "key": "cupomInexistente",
+      "value": ""
+    },
+    {
+      "key": "cupomExpirado",
+      "value": ""
+    },
+    {
+      "key": "limiteQuantidade",
+      "value": ""
+    },
+    {
+      "key": "cliente",
+      "value": ""
+    }
+  ]
+}
