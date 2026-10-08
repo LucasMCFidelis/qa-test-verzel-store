@@ -4,6 +4,7 @@ import { padraoDaUrl, ROTAS } from '../rotas'
 
 Given('que estou na página de checkout', async ({ checkout }) => {
   await checkout.abrir()
+  await expect(checkout.paginaCarregada()).toBeVisible()
 })
 
 Given('que o cliente informa o nome {string}', async ({ checkout }, nome: string) => {

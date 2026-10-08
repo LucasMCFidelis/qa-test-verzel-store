@@ -3,6 +3,7 @@ import { When, Then } from '../fixtures'
 
 When('eu acesso o carrinho', async ({ carrinho }) => {
   await carrinho.abrir()
+  await expect(carrinho.paginaCarregada()).toBeVisible()
 })
 
 Then('o sistema exibe o aviso {string}', async ({ carrinho }, aviso: string) => {

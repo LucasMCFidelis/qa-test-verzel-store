@@ -12,10 +12,12 @@ Given('que o carrinho contém os itens {string}', async ({ carrinho }, itens: st
 
 Given('que estou na página inicial', async ({ home }) => {
   await home.abrir()
+  await expect(home.paginaCarregada()).toBeVisible()
 })
 
 Given('que estou na página do carrinho', async ({ carrinho }) => {
   await carrinho.abrir()
+  await expect(carrinho.paginaCarregada()).toBeVisible()
 })
 
 When('eu adiciono o produto {string} ao carrinho', async ({ home }, produto: string) => {
