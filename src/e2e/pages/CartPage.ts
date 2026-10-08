@@ -62,6 +62,10 @@ export class CartPage {
     return this.page.getByRole('alert')
   }
 
+  avisoDeFreteGratis() {
+    return this.resumo().getByText(/^Faltam R\$ [\d.,]+ para o frete grátis\.$/)
+  }
+
   resumo() {
     return this.page.getByRole('region', { name: 'Resumo do pedido' })
   }
