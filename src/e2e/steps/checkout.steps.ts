@@ -59,6 +59,7 @@ Then('o pedido não é confirmado', async ({ page }) => {
 
 Then('o sistema mantém o cliente na página de checkout', async ({ page, checkout }) => {
   await expect(page).toHaveURL(/\/checkout$/)
+  await expect(checkout.paginaCarregada()).toBeVisible()
   await expect(checkout.botaoConfirmar()).toBeVisible()
 })
 

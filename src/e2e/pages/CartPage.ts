@@ -1,8 +1,11 @@
-import type { Page } from '@playwright/test'
+import type { Locator } from '@playwright/test'
+import { BasePage } from './BasePage'
 import type { Item } from '@utils/itens'
 
-export class CartPage {
-  constructor(private readonly page: Page) {}
+export class CartPage extends BasePage {
+  paginaCarregada(): Locator {
+    return this.page.getByRole('heading', { level: 1, name: 'Carrinho' })
+  }
 
   async abrir() {
     await this.page.goto('/carrinho')

@@ -1,7 +1,10 @@
-import type { Page } from '@playwright/test'
+import type { Locator } from '@playwright/test'
+import { BasePage } from './BasePage'
 
-export class OrderConfirmationPage {
-  constructor(private readonly page: Page) {}
+export class OrderConfirmationPage extends BasePage {
+  paginaCarregada(): Locator {
+    return this.numeroDoPedido()
+  }
 
   numeroDoPedido() {
     return this.page.getByRole('heading', { level: 1, name: /^Pedido\s/ })

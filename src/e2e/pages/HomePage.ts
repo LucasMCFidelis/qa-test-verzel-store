@@ -1,7 +1,10 @@
-import type { Page } from '@playwright/test'
+import type { Locator } from '@playwright/test'
+import { BasePage } from './BasePage'
 
-export class HomePage {
-  constructor(private readonly page: Page) {}
+export class HomePage extends BasePage {
+  paginaCarregada(): Locator {
+    return this.page.getByRole('heading', { level: 2, name: 'Produtos' })
+  }
 
   async abrir() {
     await this.page.goto('/')

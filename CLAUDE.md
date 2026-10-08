@@ -87,7 +87,7 @@ Os casos de teste têm IDs `VS-N` (ex.: `VS-21`), definidos na collection Postma
 - Limites: cubra valor-limite, abaixo e acima (ex.: 5 un. por produto, frete grátis no valor exato).
 
 **E2E**
-- Page Object por página/componente em `src/e2e/pages`, com métodos em linguagem de negócio (`abrir()`, `adicionarAoCarrinho()`), recebendo `Page` no construtor.
+- Page Object por página/componente em `src/e2e/pages`, com métodos em linguagem de negócio (`abrir()`, `adicionarAoCarrinho()`), recebendo `Page` no construtor. Todo Page Object estende `BasePage` e implementa `paginaCarregada()` (locator que só existe com a página carregada); os steps usam `expect(po.paginaCarregada()).toBeVisible()` em vez de validar só a URL.
 - Locators por papel/texto acessível (`getByRole`, `getByLabel`, `getByTestId`) — evite CSS/XPath frágeis.
 - Esperas **somente** via auto-wait e `expect(...)` web-first. Proibido `waitForTimeout`/sleeps.
 - Asserts ficam em steps `Then` (ou `expect` no step), não dentro dos Page Objects.

@@ -1,7 +1,10 @@
-import type { Page } from '@playwright/test'
+import type { Locator } from '@playwright/test'
+import { BasePage } from './BasePage'
 
-export class CheckoutPage {
-  constructor(private readonly page: Page) {}
+export class CheckoutPage extends BasePage {
+  paginaCarregada(): Locator {
+    return this.page.getByRole('heading', { level: 1, name: 'Finalizar compra' })
+  }
 
   async abrir() {
     await this.page.goto('/checkout')
