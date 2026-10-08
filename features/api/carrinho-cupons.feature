@@ -19,7 +19,7 @@ Feature: Cupons no cálculo do carrinho
     And o total de cada item é o preço unitário vezes a quantidade
     And o cupom é aplicado ao subtotal de 239.70 gerando um desconto de 23.97
     And o frete é grátis
-    And o total do pedido é 215.73
+    And o total do carrinho é 215.73
 
   @VS-7 @regressao
   Scenario: Calcular carrinho sem cupom
@@ -27,7 +27,7 @@ Feature: Cupons no cálculo do carrinho
     When eu calculo o carrinho
     Then a resposta tem status 200
     And nenhum desconto é aplicado
-    And o total do pedido é 119.90
+    And o total do carrinho é 119.90
 
   @VS-8 @regressao
   Scenario: Aplicar cupom em minúsculas
@@ -35,7 +35,7 @@ Feature: Cupons no cálculo do carrinho
     When eu calculo o carrinho informando o cupom "bemvindo10"
     Then a resposta tem status 200
     And o cupom é aplicado ao subtotal de 179.70 gerando um desconto de 17.97
-    And o total do pedido é 181.63
+    And o total do carrinho é 181.63
 
   @VS-10 @regressao
   Scenario: Aplicar cupom com espaços nas pontas
@@ -93,4 +93,4 @@ Feature: Cupons no cálculo do carrinho
     And o cupom é recusado com a mensagem "Cupom expirado."
     And nenhum desconto é aplicado
     And o frete é grátis
-    And o total do pedido é 229.90
+    And o total do carrinho é 229.90

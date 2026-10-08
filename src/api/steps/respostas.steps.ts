@@ -12,3 +12,8 @@ Then(
     expect(corpo).toHaveProperty('erro.codigo', codigo)
   },
 )
+
+Then('o erro aponta para o campo {string}', async ({ ctx }, campo: string) => {
+  const corpo = await ctx.resposta!.json()
+  expect(corpo).toHaveProperty('erro.campo', campo)
+})
