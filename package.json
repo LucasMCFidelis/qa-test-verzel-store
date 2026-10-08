@@ -1,0 +1,33 @@
+{
+  "name": "qa-test-verzel-store",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "bddgen && playwright test",
+    "test:api": "bddgen && playwright test --project=api",
+    "test:e2e": "bddgen && playwright test --project=e2e-chromium",
+    "test:e2e:all": "bddgen && playwright test --project=e2e-chromium --project=e2e-firefox --project=e2e-webkit",
+    "test:smoke": "bddgen && playwright test --project=api --project=e2e-chromium --grep @smoke",
+    "test:ui": "bddgen && playwright test --ui",
+    "steps": "bddgen export",
+    "report": "playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucasMCFidelis/qa-test-verzel-store.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/LucasMCFidelis/qa-test-verzel-store/issues"
+  },
+  "homepage": "https://github.com/LucasMCFidelis/qa-test-verzel-store#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.4",
+    "dotenv": "^18.0.6",
+    "playwright-bdd": "^9.2.1",
+    "typescript": "^7.0.2"
+  }
+}
