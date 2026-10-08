@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run test:*)",
+      "Bash(npm run steps)",
+      "Bash(npm run report)",
+      "Bash(npx bddgen:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx playwright test:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Edit(./.features-gen/**)",
+      "Edit(./package-lock.json)"
+    ]
+  }
+}
