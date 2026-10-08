@@ -20,6 +20,18 @@ export class CartPage {
     )
   }
 
+  async definirCupomAplicado(codigo: string) {
+    await this.page.evaluate(
+      (valor) => sessionStorage.setItem('verzel-store:cupom', valor),
+      JSON.stringify(codigo),
+    )
+  }
+
+  async aplicarCupom(codigo: string) {
+    await this.page.getByRole('textbox', { name: 'Cupom de desconto' }).fill(codigo)
+    await this.page.getByRole('button', { name: 'Aplicar cupom' }).click()
+  }
+
   async aumentarQuantidade(produto: string) {
     await this.botaoAumentar(produto).click()
   }
@@ -36,6 +48,18 @@ export class CartPage {
 
   quantidade(produto: string) {
     return this.page.getByRole('status', { name: `Quantidade de ${produto}` })
+  }
+
+  mensagemDeCupomAplicado() {
+    return this.page.getByText(/^Cupom\s+\S+\s+aplicado\.$/)
+  }
+
+  botaoRemoverCupom() {
+    return this.page.getByRole('button', { name: 'Remover cupom' })
+  }
+
+  alerta() {
+    return this.page.getByRole('alert')
   }
 
   resumo() {

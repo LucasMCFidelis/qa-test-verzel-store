@@ -79,19 +79,3 @@ Then(
     await expect(carrinho.botaoAumentar(produto)).toBeDisabled()
   },
 )
-
-Then(
-  'o resumo exibe subtotal {string}, desconto {string}, o frete é grátis \\(R$ 0,00) e total {string}',
-  async ({ carrinho }, subtotal: string, desconto: string, total: string) => {
-    await expect(carrinho.resumo()).toMatchAriaSnapshot(`
-      - term: Subtotal
-      - definition: ${subtotal}
-      - term: Desconto
-      - definition: ${desconto}
-      - term: Frete
-      - definition: Grátis
-      - term: Total
-      - definition: ${total}
-    `)
-  },
-)
