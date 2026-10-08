@@ -1,8 +1,14 @@
 import type { Locator, Page } from '@playwright/test'
+import { padraoDaUrl, type Rota } from '../rotas'
 
 export abstract class BasePage {
+  protected abstract readonly rota: Rota
+
   constructor(protected readonly page: Page) {}
 
-  /** Elemento que só existe quando esta página terminou de carregar (o assert fica no step). */
   abstract paginaCarregada(): Locator
+
+  urlEsperada(): RegExp {
+    return padraoDaUrl(this.rota)
+  }
 }

@@ -1,13 +1,16 @@
 import type { Locator } from '@playwright/test'
 import { BasePage } from './BasePage'
+import { ROTAS } from '../rotas'
 
 export class HomePage extends BasePage {
+  protected readonly rota = ROTAS.home
+
   paginaCarregada(): Locator {
     return this.page.getByRole('heading', { level: 2, name: 'Produtos' })
   }
 
   async abrir() {
-    await this.page.goto('/')
+    await this.page.goto(this.rota)
   }
 
   async adicionarAoCarrinho(produto: string) {

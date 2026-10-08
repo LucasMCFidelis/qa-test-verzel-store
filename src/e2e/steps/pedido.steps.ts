@@ -15,7 +15,7 @@ Then(
   'o sistema confirma o pedido com número no formato {string}',
   async ({ page, confirmacao }, formato: string) => {
     const padrao = new RegExp(`^Pedido ${formato.replace(/0/g, () => '[0-9]')}$`)
-    await expect(page).toHaveURL(/\/pedido-confirmado/)
+    await expect(page).toHaveURL(confirmacao.urlEsperada())
     await expect(confirmacao.paginaCarregada()).toBeVisible()
     await expect(confirmacao.numeroDoPedido()).toHaveText(padrao)
   },

@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test'
 import { Given, When, Then } from '../fixtures'
+import { padraoDaUrl, ROTAS } from '../rotas'
 
 Given('que estou na página de checkout', async ({ checkout }) => {
   await checkout.abrir()
@@ -54,11 +55,11 @@ Then(
 )
 
 Then('o pedido não é confirmado', async ({ page }) => {
-  await expect(page).not.toHaveURL(/\/pedido-confirmado/)
+  await expect(page).not.toHaveURL(padraoDaUrl(ROTAS.pedidoConfirmado))
 })
 
 Then('o sistema mantém o cliente na página de checkout', async ({ page, checkout }) => {
-  await expect(page).toHaveURL(/\/checkout$/)
+  await expect(page).toHaveURL(checkout.urlEsperada())
   await expect(checkout.paginaCarregada()).toBeVisible()
   await expect(checkout.botaoConfirmar()).toBeVisible()
 })

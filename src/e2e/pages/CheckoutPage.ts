@@ -1,13 +1,16 @@
 import type { Locator } from '@playwright/test'
 import { BasePage } from './BasePage'
+import { ROTAS } from '../rotas'
 
 export class CheckoutPage extends BasePage {
+  protected readonly rota = ROTAS.checkout
+
   paginaCarregada(): Locator {
     return this.page.getByRole('heading', { level: 1, name: 'Finalizar compra' })
   }
 
   async abrir() {
-    await this.page.goto('/checkout')
+    await this.page.goto(this.rota)
   }
 
   async informarNome(nome: string) {

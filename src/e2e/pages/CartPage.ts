@@ -1,14 +1,17 @@
 import type { Locator } from '@playwright/test'
 import { BasePage } from './BasePage'
+import { ROTAS } from '../rotas'
 import type { Item } from '@utils/itens'
 
 export class CartPage extends BasePage {
+  protected readonly rota = ROTAS.carrinho
+
   paginaCarregada(): Locator {
     return this.page.getByRole('heading', { level: 1, name: 'Carrinho' })
   }
 
   async abrir() {
-    await this.page.goto('/carrinho')
+    await this.page.goto(this.rota)
   }
 
   async abrirPeloCabecalho() {
@@ -16,7 +19,7 @@ export class CartPage extends BasePage {
   }
 
   async montarComItens(itens: Item[]) {
-    await this.page.goto('/')
+    await this.page.goto(ROTAS.home)
     await this.page.evaluate(
       (valor) => sessionStorage.setItem('verzel-store:itens', valor),
       JSON.stringify(itens),
