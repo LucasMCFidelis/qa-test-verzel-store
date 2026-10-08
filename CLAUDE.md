@@ -23,7 +23,8 @@ src/
   e2e/pages/*.ts       # Page Objects (ex.: HomePage)
   e2e/steps/*.steps.ts
   utils/               # helpers compartilhados (alias `@utils/*`)
-postman/               # collection + environment (IDs VS-N dos casos de teste)
+postman/               # collection + environment (IDs VS-N dos casos de API)
+test-plan/             # export do plano de testes (QAS) em JSON — fonte dos casos E2E; ignorado pelo git
 .features-gen/         # GERADO por `bddgen` — nunca editar nem commitar
 reports/, playwright-report/, test-results/   # gerados — nunca commitar
 ```
@@ -43,6 +44,17 @@ Projetos Playwright: `api`, `e2e-chromium`, `e2e-firefox`, `e2e-webkit`. Cada ca
 | `npm run report` | abre o relatório HTML |
 
 Sempre rode via os scripts `npm run …` (eles executam `bddgen` antes). Rodar `playwright test` direto usa specs gerados desatualizados. Para validar tipos: `npx tsc --noEmit`.
+
+## Plano de testes (`test-plan/`) — fonte dos casos E2E
+
+`test-plan/*.json` é o export do plano de testes do QAS (ignorado pelo git; pode haver mais de um arquivo — use o mais recente). **Antes de montar feature, steps ou Page Object de um caso `VS-N`, leia o caso nesse arquivo.** O `id` numérico do caso é o `N` do `VS-N`.
+
+- Estrutura: `suites[]` aninhadas (`title`, `suites`, `cases`); cada caso tem `id`, `title`, `description`, `preconditions`, `priority`, `layer` (`api`/`e2e`), `tags` e `steps[]` (`keyword` + `text`, já em Gherkin pt-BR).
+- Extrair um caso (arquivo é grande; não leia inteiro):
+  `node -e 'const d=JSON.parse(require("fs").readFileSync("test-plan/<arquivo>.json","utf8"));(function w(s){for(const x of s){for(const c of x.cases||[])if(c.id===57)console.log(JSON.stringify(c,null,1));w(x.suites||[])}})(d.suites)'`
+- Use `title` como título do cenário, `tags` como tags (`@VS-N` + as do caso), `steps` como base do Gherkin, `preconditions` para o `Given`/estado inicial e `description` para a intenção. Respeite a redação dos steps do plano, ajustando só para reutilizar steps existentes (`npm run steps`).
+- Se `description`/steps indicarem dado a confirmar (ex.: "mensagem exata deve ser confirmada na UI"), confirme na UI real e **avise o usuário** do que foi observado; não invente.
+- Casos E2E vivem em `suites > e2e > …` (`layer: "e2e"`); os de API também estão no plano, além do Postman.
 
 ## Rastreabilidade (Postman ↔ Gherkin)
 
@@ -88,7 +100,7 @@ Os casos de teste têm IDs `VS-N` (ex.: `VS-21`), definidos na collection Postma
 
 ## Como trabalhar neste repositório (Claude Code)
 
-- **Leia antes de escrever:** olhe a feature, os steps e a fixture da camada afetada e o caso `VS-N` correspondente na collection Postman.
+- **Leia antes de escrever:** olhe a feature, os steps e a fixture da camada afetada e o caso `VS-N` correspondente — no `test-plan/` (E2E e API) e/ou na collection Postman (API).
 - **Mudanças pequenas e verificáveis:** adicione um cenário, rode `npm run test:api` (ou `test:e2e`) e só então avance. Reporte falhas com a saída real; não diga que passou sem rodar.
 - **Falha de teste ≠ ajustar o teste:** se o cenário falha contra a aplicação, diferencie bug da aplicação (reporte, marque `@bug`/documente) de erro do teste. Nunca afrouxe um assert só para ficar verde.
 - **Não chute o contrato da API:** verifique o comportamento real com uma chamada (`curl`/Postman) antes de fixar o esperado, e confirme com o usuário se divergir da especificação.
