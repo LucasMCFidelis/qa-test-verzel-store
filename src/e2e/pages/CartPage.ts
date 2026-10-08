@@ -25,11 +25,16 @@ export class CartPage {
       (valor) => sessionStorage.setItem('verzel-store:cupom', valor),
       JSON.stringify(codigo),
     )
+    await this.page.reload()
   }
 
   async aplicarCupom(codigo: string) {
     await this.page.getByRole('textbox', { name: 'Cupom de desconto' }).fill(codigo)
     await this.page.getByRole('button', { name: 'Aplicar cupom' }).click()
+  }
+
+  async finalizarCompra() {
+    await this.page.getByRole('link', { name: 'Finalizar compra' }).click()
   }
 
   async aumentarQuantidade(produto: string) {
