@@ -3780,6 +3780,52 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "VS-76 POST Confirmar pedido sem cupom no limite para obtenção do frete grátis",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"a resposta tem status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n})\r\n\r\nconst responseBody = pm.response.json();\r\n\r\npm.test(\"o pedido é confirmado com número no formato 'VZ-000000'\", function () {\r\n    pm.expect(responseBody).to.have.property(\"numero\");\r\n    pm.expect(responseBody.numero).to.match(/^VZ-\\d{6}$/);\r\n});\r\n\r\npm.test(\"o frete é grátis\", function () {\r\n    pm.expect(responseBody.freteGratis).to.be.true;\r\n    pm.expect(responseBody.frete).to.equal(0);\r\n})\r\n\r\npm.test(\"o total do pedido é 200.00\", function () {\r\n    pm.expect(responseBody.total).to.equal(200.00);\r\n})"
+                    ]
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.collectionVariables.set(\"itensArray\", JSON.stringify([\r\n    { \"produtoId\": \"P005\", \"quantidade\": 2 },\r\n]))"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"cliente\": {\r\n        \"nome\": \"Maria Silva\",\r\n        \"email\": \"maria@exemplo.com\",\r\n        \"cep\": \"01310-100\"\r\n    },\r\n    \"itens\": {{itensArray}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
