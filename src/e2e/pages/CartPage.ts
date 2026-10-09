@@ -19,19 +19,24 @@ export class CartPage extends BasePage {
   }
 
   async montarComItens(itens: Item[]) {
-    await this.page.goto(ROTAS.home)
-    await this.page.evaluate(
-      (valor) => sessionStorage.setItem('verzel-store:itens', valor),
-      JSON.stringify(itens),
-    )
+    await this.semearNoStorage('verzel-store:itens', JSON.stringify(itens))
   }
 
   async definirCupomAplicado(codigo: string) {
-    await this.page.evaluate(
-      (valor) => sessionStorage.setItem('verzel-store:cupom', valor),
-      JSON.stringify(codigo),
+    await this.semearNoStorage('verzel-store:cupom', JSON.stringify(codigo))
+    if (this.page.url() !== 'about:blank') await this.page.reload()
+  }
+
+  private async semearNoStorage(chave: string, valor: string) {
+    await this.page.addInitScript(
+      ([k, v]) => {
+        const marcador = `__semeado:${k}`
+        if (sessionStorage.getItem(marcador)) return
+        sessionStorage.setItem(marcador, '1')
+        sessionStorage.setItem(k, v)
+      },
+      [chave, valor],
     )
-    await this.page.reload()
   }
 
   async aplicarCupom(codigo: string) {
