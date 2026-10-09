@@ -37,6 +37,16 @@ Feature: Pedidos
       | itens            | campo               |
       | P001 x6          | itens[0].quantidade |
       | P001 x5, P004 x6 | itens[1].quantidade |
+  
+  @VS-76 @regressao @bug
+  Scenario: Confirmar pedido sem cupom no limite para obtenção do frete grátis
+    Given que os dados do cliente são válidos
+    And que o carrinho contém os itens "P005 x2"
+    When eu confirmo o pedido
+    Then a resposta tem status 201
+    And o pedido é confirmado com número no formato "VZ-000000"
+    And o frete é grátis
+    And o total do pedido é 200.00
 
   @VS-39 @cupom @smoke
   Scenario: Confirmar pedido com cupom BEMVINDO10
