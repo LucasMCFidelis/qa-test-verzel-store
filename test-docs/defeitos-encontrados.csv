@@ -1,0 +1,27 @@
+"id","title","test case id","author","assignee","actual result","status","milestone","severity","external issues","attachments","tags"
+"2","API aceita quantidade acima de 5 unidades por produto no cálculo do carrinho e na confirmação do pedido","29
+35
+75","Lucas Fidelis","Unassigned","A API não aplica o limite máximo de 5 unidades por produto em nenhuma etapa do fluxo. A falha vai do cálculo do carrinho até a confirmação do pedido. Ao enviar um item com quantidade 6:
+
+- **POST /api/carrinho/calcular** responde 200 e calcula normalmente subtotal, frete e total.
+- **POST /api/pedidos** confirma o pedido, gera o número de identificação e aplica cupom e frete grátis sobre as 6 unidades.
+
+Segundo o CA10, cada produto pode ter no máximo 5 unidades por pedido, e a regra vale para a interface e para a API. A documentação de erros define que, nesse caso, os dois endpoints devem retornar 422 com o código `QUANTIDADE_MAXIMA_EXCEDIDA`, sem calcular valores nem criar pedido.
+
+Com isso, o limite de 5 unidades hoje depende apenas da interface e pode ser contornado por chamada direta à API. Isso permite confirmar pedidos fora da regra de negócio, com os benefícios da promoção concedidos sobre a unidade excedente.
+
+**Ambiente:** Verzel Store v2.3.0 · card VZS-142
+
+- `https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular`
+- `https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos`
+
+**Critério violado:** CA10 (e a tabela de códigos de erro: 422 `QUANTIDADE_MAXIMA_EXCEDIDA` quando a quantidade de um produto é maior que 5)","Open","","Major","","https://d2cxucsjd6xvsd.cloudfront.net/public/team/e848dff5766c86d6e0608db0bf26b28685b8ced7/attachment/e78244ca37a786a4f45ccd6476c04e6b2ea916a9/Captura%20de%20tela%202026-10-07%20085705.png",""
+"1","Frete grátis não é concedido quando o subtotal é exatamente R$ 200,00","22
+65","Lucas Fidelis","Unassigned","Quando o subtotal do carrinho é igual a R$ 200,00, a API cobra o frete fixo de R$ 19,90 e retorna `freteGratis: false`. Segundo o CA06, o frete grátis vale para subtotal a partir de R$ 200,00, inclusive. Portanto o valor limite deveria conceder o benefício.
+
+A resposta também é inconsistente: `valorFaltanteFreteGratis` vem 0, indicando que o limite foi atingido, mas o frete continua sendo cobrado. O cliente paga R$ 19,90 a mais em toda compra de exatamente R$ 200,00.
+
+**Ambiente:** Verzel Store v2.3.0 · card VZS-142 · `https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular`
+
+**Critério violado:** CA06 (e a regra de cálculo do frete: ""R$ 0,00 quando o subtotal é igual ou maior que R$ 200,00"")","Open","","Critical","","https://d2cxucsjd6xvsd.cloudfront.net/public/team/e848dff5766c86d6e0608db0bf26b28685b8ced7/attachment/faea77d5616c293987515c8ef3c992d40356c2ad/Captura%20de%20tela%202026-10-07%20081337.png
+https://d2cxucsjd6xvsd.cloudfront.net/public/team/e848dff5766c86d6e0608db0bf26b28685b8ced7/attachment/1bcdc6ca2f4beb5248ee3b75ffe29ec66b090114/Captura%20de%20tela%202026-10-07%20123416.png",""

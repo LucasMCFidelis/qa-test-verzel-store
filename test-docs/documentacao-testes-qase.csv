@@ -1,0 +1,1772 @@
+v2.id,title,description,preconditions,postconditions,tags,priority,severity,type,behavior,automation,status,is_flaky,layer,steps_type,steps_actions,steps_result,steps_data,milestone_id,milestone,suite_id,suite_parent_id,suite,suite_without_cases,parameters,is_muted
+,,,,,,,,,,,,,,,,,,,,1,,api,1
+,,,,,,,,,,,,,,,,,,,,2,1,"Busca de produtos",1
+,,,,,,,,,,,,,,,,,,,,3,2,Listagem,1
+,,,,,,,,,,,,,,,,,,,,4,2,"Busca de produto por id",1
+,,,,,,,,,,,,,,,,,,,,5,1,"Calcular carrinho",1
+,,,,,,,,,,,,,,,,,,,,6,5,Cupons,1
+,,,,,,,,,,,,,,,,,,,,7,5,Frete,1
+,,,,,,,,,,,,,,,,,,,,8,5,"Quantidade por produto",1
+,,,,,,,,,,,,,,,,,,,,9,1,Pedidos,1
+,,,,,,,,,,,,,,,,,,,,10,9,"Confirmação do pedido",1
+,,,,,,,,,,,,,,,,,,,,11,9,Cupons,1
+,,,,,,,,,,,,,,,,,,,,12,9,"Dados do cliente",1
+,,,,,,,,,,,,,,,,,,,,13,12,Nome,1
+,,,,,,,,,,,,,,,,,,,,14,12,Email,1
+,,,,,,,,,,,,,,,,,,,,15,12,Cep,1
+,,,,,,,,,,,,,,,,,,,,16,,e2e,1
+,,,,,,,,,,,,,,,,,,,,17,16,Carrinho,1
+,,,,,,,,,,,,,,,,,,,,18,17,"Quantidade por produto",1
+,,,,,,,,,,,,,,,,,,,,19,16,Cupons,1
+,,,,,,,,,,,,,,,,,,,,20,16,Frete,1
+,,,,,,,,,,,,,,,,,,,,21,16,Checkout,1
+,,,,,,,,,,,,,,,,,,,,22,21,"Dados do cliente",1
+,,,,,,,,,,,,,,,,,,,,23,22,Nome,1
+,,,,,,,,,,,,,,,,,,,,24,22,Email,1
+,,,,,,,,,,,,,,,,,,,,25,22,Cep,1
+,,,,,,,,,,,,,,,,,,,,26,16,"Confirmação do pedido",1
+1,"Listar os produtos disponíveis com status 200 e campos esperados","Valida que a rota GET /api/produtos retorna os produtos disponíveis no catálogo com status 200, que a lista não está vazia e que cada produto possui os campos esperados (id, nome, descricao, categoria e preco), com preço maior que zero. O caso não depende da quantidade de produtos cadastrados.","- A Verzel Store está disponível e a API responde em /api. 
+- Há ao menos um produto cadastrado no catálogo. 
+- Nenhuma autenticação é necessária.",,"produtos,smoke,api",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu consulto a lista de produtos
+3. Then a resposta tem status 200
+4. And a lista de produtos não está vazia
+5. And cada produto possui os campos ""id, nome, descricao, categoria, preco""
+6. And o campo ""preco"" de cada produto é maior que zero
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,3,2,Listagem,,,no
+2,"Rejeitar método não permitido na listagem de produtos","Valida que a rota de listagem de produtos rejeita métodos HTTP diferentes de GET, retornando 405 com o código de erro METODO_NAO_PERMITIDO.
+Exemplos de método: POST, PUT e DELETE.","- A Verzel Store está disponível e a API responde em /api.
+- Nenhuma autenticação é necessária.",,"produtos,api",low,minor,functional,negative,is-not-automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu envio uma requisição ""<método>"" para ""/api/produtos""
+3. Then a resposta tem status 405
+4. And o erro retornado tem o código ""METODO_NAO_PERMITIDO""
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,3,2,Listagem,,,no
+3,"Consultar produto existente pelo id","Valida que a consulta de um produto existente pelo id retorna status 200, com o produto solicitado e todos os campos esperados (id, nome, descricao, categoria e preco), com preço maior que zero. Exemplo: P001.","- A Verzel Store está disponível e a API responde em /api.
+- O produto ""P001"" está cadastrado no catálogo.
+- Nenhuma autenticação é necessária.",,"smoke,produtos,api",high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu consulto o produto com id ""P001""
+3. Then a resposta tem status 200
+4. And o produto retornado tem o id ""P001""
+5. And o produto possui os campos ""id, nome, descricao, categoria, preco""
+6. And o campo ""preco"" do produto é maior que zero
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,4,2,"Busca de produto por id",,,no
+4,"Rejeitar consulta de produto inexistente","Valida que a consulta de um id que não existe no catálogo retorna 404 com o código de erro PRODUTO_NAO_ENCONTRADO.
+Exemplos de id: P999, P000 e ABC.","- A Verzel Store está disponível e a API responde em /api.
+- Os ids dos exemplos não estão cadastrados no catálogo.
+- Nenhuma autenticação é necessária.",,"produtos,api",medium,major,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu consulto o produto com id ""<id>""
+3. Then a resposta tem status 404
+4. And o erro retornado tem o código ""PRODUTO_NAO_ENCONTRADO""
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,4,2,"Busca de produto por id",,,no
+52,"Rejeitar método não permitido na consulta de produto por id","Valida que a rota de consulta de produto por id, que só aceita GET, rejeita outros métodos HTTP com 405 e o código de erro METODO_NAO_PERMITIDO. Usa um id existente (P001), para que o 405 não seja confundido com um produto não encontrado.
+Exemplos de método: POST, PUT e DELETE.","- A Verzel Store está disponível e a API responde em /api.
+- O produto ""P001"" está cadastrado no catálogo.
+- Nenhuma autenticação é necessária.",,"api,produtos",low,minor,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu envio uma requisição ""<método>"" para ""/api/produtos/P001""
+3. Then a resposta tem status 405
+4. And o erro retornado tem o código ""METODO_NAO_PERMITIDO""
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,4,2,"Busca de produto por id",,,no
+53,"Fornecer listagem ao realizar consulta de produto sem informar o id","Valida o comportamento ao consultar /api/produtos/ sem informar o id (barra final, sem identificador). A API deve tratar a requisição como a listagem e responder 200 com a lista.","- A Verzel Store está disponível e a API responde em /api.
+- Nenhuma autenticação é necessária.",,"api,produtos",medium,minor,functional,negative,is-not-automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu consulto um produto sem informar o id
+3. Then a resposta tem status 200
+4. And a lista de produtos não está vazia
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,4,2,"Busca de produto por id",,,no
+54,"Rejeitar método não permitido no cálculo do carrinho","Valida que a rota de cálculo do carrinho, que só aceita POST, rejeita outros métodos HTTP com 405 e o código de erro METODO_NAO_PERMITIDO.
+Exemplos de método: GET, PUT e DELETE.","- A Verzel Store está disponível e a API responde em /api.
+- Nenhuma autenticação é necessária.",,"api,carrinho",low,minor,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu envio uma requisição ""<método>"" para ""/api/carrinho/calcular""
+3. Then a resposta tem status 405
+4. And o erro retornado tem o código ""METODO_NAO_PERMITIDO""
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,5,1,"Calcular carrinho",,,no
+7,"Calcular carrinho sem cupom","Valida que, sem o campo cupom, nenhum desconto é aplicado. Exemplo: P005 x1, subtotal de 100,00 e frete de 19,90.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,cupom",medium,major,functional,positive,automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 200
+5. And nenhum desconto é aplicado
+6. And o total do pedido é 119.90
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,6,5,Cupons,,,no
+5,"Aplicar cupom BEMVINDO10 em carrinho com um item","Valida que o cupom BEMVINDO10 aplica 10% de desconto sobre o subtotal dos produtos (CA01). Exemplo: P005 x1, desconto de 10,00.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom,smoke",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""BEMVINDO10""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,6,5,Cupons,,,no
+6,"Aplicar cupom BEMVINDO10 em carrinho com múltiplos itens","Valida o desconto de 10% em carrinho com vários itens e quantidades (CA01), usando o exemplo da documentação: P002 x1 e P004 x2. Valida também o total por item e o arredondamento em 2 casas (CA11).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P002 x1, P004 x2""
+3. When eu calculo o carrinho informando o cupom ""BEMVINDO10""
+4. Then a resposta tem status 200
+5. And o total de cada item é o preço unitário vezes a quantidade
+6. And o cupom é aplicado ao subtotal de 239.70 gerando um desconto de 23.97
+7. And o frete é grátis
+8. And o total do pedido é 215.73
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,6,5,Cupons,,,no
+8,"Aplicar cupom em minúsculas","Valida que o código do cupom não diferencia maiúsculas de minúsculas (CA02). Usa P001 x3, valores propensos a imprecisão de ponto flutuante, para validar o arredondamento (CA11): subtotal de 179,70, desconto de 17,97 e total de 181,63 com frete de 19,90.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x3""
+3. When eu calculo o carrinho informando o cupom ""bemvindo10""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 179.70 gerando um desconto de 17.97
+6. And o total do pedido é 181.63
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,6,5,Cupons,,,no
+9,"Aplicar cupom em caixa mista","Valida que o cupom com maiúsculas e minúsculas misturadas (BemVindo10) é aplicado normalmente (CA02).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",medium,minor,functional,positive,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""BemVindo10""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,6,5,Cupons,,,no
+10,"Aplicar cupom com espaços nas pontas","Valida que espaços no início e no fim do código são ignorados, mesmo combinados com minúsculas (CA02). O código normalizado em cupom.codigo não está definido na documentação, então esse resultado esperado deve ser confirmado.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",medium,major,functional,positive,automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""  bemvindo10  ""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+6. And o código do cupom retornado é ""BEMVINDO10""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,6,5,Cupons,,,no
+11,"Rejeitar cupom inexistente","Valida que um cupom que não existe não gera erro nesta rota: a resposta é 200, sem desconto, e a mensagem informa o motivo (CA03).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom,smoke",high,critical,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""PROMO50""
+4. Then a resposta tem status 200
+5. And o cupom é recusado com a mensagem ""Cupom inválido.""
+6. And nenhum desconto é aplicado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,6,5,Cupons,,,no
+12,"Rejeitar código de cupom inválido","Valida que variações de código que não correspondem a nenhum cupom são tratadas como inválidas, sem erro de servidor (CA03).
+Exemplos: BEMVINDO1 (um caractere a menos), BEMVINDO100 (um a mais), BEM VINDO10 (espaço interno), BEMVINDO10! e @#$% (caracteres especiais) e um texto com mais de 100 caracteres.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",medium,major,functional,negative,automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""<cupom>""
+4. Then a resposta tem status 200
+5. And o cupom é recusado com a mensagem ""Cupom inválido.""
+6. And nenhum desconto é aplicado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,6,5,Cupons,,,no
+13,"Rejeitar cupom vazio","Valida o tratamento de cupom vazio, sem desconto e sem erro de servidor (CA03). A documentação não define o comportamento: pode ser tratado como sem cupom ou como cupom inválido. O resultado esperado deve ser confirmado.
+Exemplos: """" (string vazia) e ""   "" (só espaços).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",low,minor,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""<cupom>""
+4. Then a resposta tem status 200
+5. And nenhum desconto é aplicado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,6,5,Cupons,,,no
+14,"Rejeitar cupom com tipo inválido","Valida o tratamento de cupom que não é um texto, sem desconto e sem erro de servidor (CA03). A documentação não define o comportamento: pode retornar 200 sem desconto ou um erro 422. O resultado esperado deve ser confirmado.
+Exemplos: tipo número com valor 10 e tipo objeto com valor {}.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",low,minor,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom do tipo ""<tipo>"" com o valor ""<valor>""
+4. Then a resposta tem status 200
+5. And nenhum desconto é aplicado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,6,5,Cupons,,,no
+15,"Rejeitar cupom expirado","Valida que o cupom VERAO2026, expirado em 31/03/2026, não gera erro nesta rota: a resposta é 200, sem desconto, com a mensagem de expirado (CA04).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom,smoke",high,critical,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""VERAO2026""
+4. Then a resposta tem status 200
+5. And o cupom é recusado com a mensagem ""Cupom expirado.""
+6. And nenhum desconto é aplicado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,6,5,Cupons,,,no
+16,"Identificar cupom expirado em minúsculas","Valida que o cupom expirado em minúsculas (verao2026) é reconhecido como expirado, e não como inexistente (CA02 e CA04).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",medium,major,functional,negative,automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""verao2026""
+4. Then a resposta tem status 200
+5. And o cupom é recusado com a mensagem ""Cupom expirado.""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,6,5,Cupons,,,no
+17,"Manter frete grátis ao usar cupom expirado","Valida que um cupom expirado em carrinho com subtotal igual ou acima de R$ 200,00 não gera desconto e mantém o frete grátis (CA04 e CA06). Exemplo: P007 x1, subtotal de 229,90.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom,frete",medium,major,functional,negative,automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P007 x1""
+3. When eu calculo o carrinho informando o cupom ""VERAO2026""
+4. Then a resposta tem status 200
+5. And o cupom é recusado com a mensagem ""Cupom expirado.""
+6. And nenhum desconto é aplicado
+7. And o frete é grátis
+8. And o total do pedido é 229.90
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,6,5,Cupons,,,no
+18,"Calcular com cupons diferentes em chamadas consecutivas","Valida que cada resposta reflete apenas o cupom enviado na própria chamada, sem herdar o cupom da chamada anterior (CA05). A primeira chamada usa um cupom válido e a segunda, um expirado.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",medium,major,functional,positive,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""BEMVINDO10""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+6. When eu calculo o carrinho informando o cupom ""VERAO2026""
+7. Then a resposta tem status 200
+8. And o cupom é recusado com a mensagem ""Cupom expirado.""
+9. And nenhum desconto é aplicado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+",,,6,5,Cupons,,,no
+19,"Repetir a mesma requisição com cupom","Valida que repetir o cálculo com o mesmo cupom retorna o mesmo resultado, sem desconto acumulado (CA05).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",medium,minor,functional,positive,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho duas vezes informando o cupom ""BEMVINDO10""
+4. Then o resultado das duas consultas é idêntico
+5. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,6,5,Cupons,,,no
+20,"Enviar dois cupons no mesmo cálculo","Valida que enviar dois cupons não acumula descontos (CA05). O mesmo cupom é enviado duas vezes, pois só o BEMVINDO10 está válido, e um acúmulo resultaria em 20,00 de desconto. A documentação não define se a API responde 200 sem acúmulo ou rejeita a requisição. O resultado esperado deve ser confirmado.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,cupom",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom do tipo ""lista"" com o valor ""BEMVINDO10, BEMVINDO10""
+4. Then o desconto aplicado não passa de 10.00
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,6,5,Cupons,,,no
+21,"Cobrar frete abaixo do limite","Valida o frete fixo de R$ 19,90 e o valor faltante em subtotal imediatamente abaixo do limite (CA06 e CA07). Exemplo: 3 x P008 + P004 = 199,90, com faltante de 0,10, valor sensível a imprecisão de ponto flutuante (CA11).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,frete,smoke",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P008 x3, P004 x1""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 200
+5. And o frete de 19.90 é cobrado
+6. And faltam 0.10 para o frete grátis
+7. And o total do pedido é 219.80
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,7,5,Frete,,,no
+22,"Conceder frete grátis no valor limite","Valida que o frete é grátis quando o subtotal é exatamente R$ 200,00, o limite inclusive (CA06). Exemplo: P005 x2.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,frete,smoke",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x2""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 200
+5. And o frete é grátis
+6. And não falta valor para o frete grátis
+7. And o total do pedido é 200.00
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,7,5,Frete,,,no
+23,"Retornar faltante zero quando o frete grátis já foi atingido","Valida que o valor faltante nunca é negativo quando o subtotal passa de R$ 200,00 (CA06 e CA07). Com o subtotal igual ao limite, a conta já dá zero, por isso os exemplos usam valores acima.
+Exemplos: P001 x1, P004 x1, P005 x1 (subtotal 209,80, o vizinho real do limite) e P007 x1 (subtotal 229,90).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,frete",medium,major,functional,positive,automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""<itens>""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 200
+5. And o frete é grátis
+6. And não falta valor para o frete grátis
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,7,5,Frete,,,no
+24,"Manter frete grátis quando o desconto reduz o valor abaixo do limite","Valida que o frete grátis considera o subtotal antes do desconto (CA08). Com P001 x1, P008 x3 e BEMVINDO10, o valor após o desconto é 188.91, abaixo de R$ 200,00, e o frete continua grátis.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,frete,cupom",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x1, P008 x3""
+3. When eu calculo o carrinho informando o cupom ""BEMVINDO10""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 209.90 gerando um desconto de 20.99
+6. And o frete é grátis
+7. And o total do pedido é 188.91
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,7,5,Frete,,,no
+25,"Calcular o faltante sobre o subtotal antes do desconto","Valida que o valor faltante para o frete grátis é calculado sobre o subtotal antes do desconto (CA08). Com P005 x1 e BEMVINDO10, o faltante é 100,00. Se o cálculo usasse o valor após o desconto, seria 110,00.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,frete,cupom",high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""BEMVINDO10""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+6. And faltam 100.00 para o frete grátis
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,7,5,Frete,,,no
+26,"Aplicar o desconto apenas sobre os produtos, sem reduzir o frete","Valida que o desconto do cupom não incide sobre o frete (CA09). Com P005 x1 e BEMVINDO10, o frete continua 19,90 e o total é 109,90.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,frete,cupom",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. When eu calculo o carrinho informando o cupom ""BEMVINDO10""
+4. Then a resposta tem status 200
+5. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+6. And o frete de 19.90 é cobrado
+7. And o total do pedido é 109.90
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,7,5,Frete,,,no
+27,"Cobrar frete fixo com cupom inválido","Valida a integração entre cupom e frete em um cenário com dados inválidos: o cupom inexistente não gera desconto e o frete fixo é cobrado em subtotal abaixo de R$ 200,00 (CA07). Exemplo: P002 x1 (139,90), faltante de 60,10.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,carrinho,frete,cupom",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P002 x1""
+3. When eu calculo o carrinho informando o cupom ""PROMO50""
+4. Then a resposta tem status 200
+5. And o cupom é recusado com a mensagem ""Cupom inválido.""
+6. And o frete de 19.90 é cobrado
+7. And faltam 60.10 para o frete grátis
+8. And o total do pedido é 159.80
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,7,5,Frete,,,no
+28,"Aceitar quantidade no limite superior","Valida que a quantidade 5, o máximo permitido por produto, é aceita (CA10). Exemplo: P001 x5.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade,smoke",high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x5""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 200
+5. And o subtotal é 299.50
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,8,5,"Quantidade por produto",,,no
+29,"Rejeitar quantidade acima do limite","Valida que a quantidade 6, imediatamente acima do máximo, é rejeitada com 422 e o campo correto indicado (CA10).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade,smoke",high,critical,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x6""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 422
+5. And o erro retornado tem o código ""QUANTIDADE_MAXIMA_EXCEDIDA""
+6. And o erro aponta para o campo ""itens[0].quantidade""
+7. And nenhum valor é calculado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,8,5,"Quantidade por produto",,,no
+30,"Rejeitar quantidade zero","Valida que a quantidade 0, imediatamente abaixo do mínimo, é rejeitada com 422 (CA10). Uma quantidade negativa pertence à mesma partição e não tem caso próprio.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade",high,major,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x0""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 422
+5. And o erro retornado tem o código ""QUANTIDADE_INVALIDA""
+6. And o erro aponta para o campo ""itens[0].quantidade""
+7. And nenhum valor é calculado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,8,5,"Quantidade por produto",,,no
+31,"Rejeitar quantidade decimal","Valida que uma quantidade decimal (1.5), dentro do intervalo de 1 a 5 mas não inteira, é rejeitada (CA10).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x1.5""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 422
+5. And o erro retornado tem o código ""QUANTIDADE_INVALIDA""
+6. And nenhum valor é calculado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,8,5,"Quantidade por produto",,,no
+32,"Rejeitar quantidade não numérica, nula ou ausente","Valida a obrigatoriedade e o tipo da quantidade (CA10). Em cada exemplo a quantidade é enviada de uma forma diferente.
+Exemplos e códigos esperados: texto (o valor ""2"" entre aspas) → QUANTIDADE_INVALIDA, nula → QUANTIDADE_INVALIDA, ausente (campo omitido) → ITEM_INVALIDO. O código do exemplo ausente deve ser confirmado.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém o item ""P001"" com a quantidade ""<quantidade>""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 422
+5. And o erro retornado tem o código ""<código>""
+6. And nenhum valor é calculado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,8,5,"Quantidade por produto",,,no
+33,"Indicar o campo do item que contém o erro","Valida que o campo do erro aponta para o item que realmente tem o problema, e não para um valor fixo (CA10). O item inválido está na segunda posição.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade",medium,minor,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x1, P002 x0""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 422
+5. And o erro retornado tem o código ""QUANTIDADE_INVALIDA""
+6. And o erro aponta para o campo ""itens[1].quantidade""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,8,5,"Quantidade por produto",,,no
+34,"Aceitar o limite de 5 unidades em dois produtos diferentes","Valida que o limite é por produto, e não por pedido (CA10). Exemplo: P001 x5 e P004 x5, com 10 unidades no total.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade",medium,major,functional,positive,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x5, P004 x5""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 200
+5. And o subtotal é 549.00
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,8,5,"Quantidade por produto",,,no
+35,"Rejeitar carrinho com um item acima do limite e outro dentro","Valida que basta um item acima do limite para rejeitar o carrinho inteiro (CA10). O item excedido fica na primeira posição, para se diferenciar do caso em que o erro está na segunda.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade",medium,major,functional,negative,automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x6, P004 x5""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 422
+5. And o erro retornado tem o código ""QUANTIDADE_MAXIMA_EXCEDIDA""
+6. And o erro aponta para o campo ""itens[0].quantidade""
+7. And nenhum valor é calculado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,8,5,"Quantidade por produto",,,no
+36,"Rejeitar o mesmo produto repetido na lista","Valida que repetir o produto na lista, por exemplo 3 + 3, é rejeitado em vez de somar as quantidades, o que burlaria o limite de 5 (CA10).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,carrinho,quantidade",high,major,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P001 x3, P001 x3""
+3. When eu calculo o carrinho
+4. Then a resposta tem status 422
+5. And o erro retornado tem o código ""ITEM_DUPLICADO""
+6. And nenhum valor é calculado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,8,5,"Quantidade por produto",,,no
+55,"Rejeitar método não permitido na confirmação de pedido","Valida que a rota de pedidos, que só aceita POST, rejeita outros métodos HTTP com 405 e o código de erro METODO_NAO_PERMITIDO.
+Exemplos de método: GET, PUT e DELETE.","- A Verzel Store está disponível e a API responde em /api.
+- Nenhuma autenticação é necessária.",,"api,pedidos",low,minor,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. When eu envio uma requisição ""<método>"" para ""/api/pedidos""
+3. Then a resposta tem status 405
+4. And o erro retornado tem o código ""METODO_NAO_PERMITIDO""
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,9,1,Pedidos,,,no
+37,"Confirmar pedido sem cupom abaixo do limite de frete grátis","Valida que um pedido válido, sem cupom e com subtotal abaixo de R$ 200,00, é confirmado com 201, número no formato VZ-000000, data de criação, frete de 19,90 e total correto. Exemplo: P005 x1, total de 119,90.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,smoke",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P005 x1""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 201
+6. And o pedido é confirmado com número no formato ""VZ-000000""
+7. And a data de criação do pedido é informada
+8. And o frete de 19.90 é cobrado
+9. And o total do pedido é 119.90
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+",,,10,9,"Confirmação do pedido",,,no
+38,"Confirmar pedido com resumo de valores igual ao do cálculo","Valida que subtotal, desconto, frete, indicador de frete grátis, valor faltante e total do pedido são idênticos aos do cálculo do carrinho para o mesmo carrinho e cupom. Exemplo: P002 x1 e P004 x2 com BEMVINDO10.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,pedidos",high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P002 x1, P004 x2""
+4. When eu confirmo o pedido informando o cupom ""BEMVINDO10""
+5. Then a resposta tem status 201
+6. And o resumo de valores é idêntico ao do cálculo do mesmo carrinho
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,10,9,"Confirmação do pedido",,,no
+76,"Confirmar pedido sem cupom no limite para obtenção do frete grátis","Valida que um pedido válido, sem cupom e com subtotal exatamente de R$ 200,00, é confirmado com 201, número no formato VZ-000000, frete de grátis e total correto. Exemplo: P005 x2, total de 200,00","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,,high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P005 x2""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 201
+6. And o pedido é confirmado com número no formato ""VZ-000000""
+7. And o frete é grátis
+8. And o total do pedido é 200.00
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,10,9,"Confirmação do pedido",,,no
+75,"Rejeitar pedido com quantidade de produtos acima do limite","Valida que a rota de pedidos rejeita a confirmação quando algum produto tem quantidade acima do máximo de 5 unidades (CA10), com 422 QUANTIDADE_MAXIMA_EXCEDIDA, indicando o campo do item excedido e sem criar o pedido. Os dados do cliente são válidos, para que o único erro possível seja o de quantidade. Complementa o caso de Calcular carrinho que valida a mesma regra no cálculo.
+Exemplos:
+- P001 x6 (limite + 1): o campo indicado é itens[0].quantidade.
+- P001 x5, P004 x6 (primeiro item no limite, segundo acima): o campo indicado é itens[1].quantidade.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,quantidade,smoke",high,critical,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""<itens>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""QUANTIDADE_MAXIMA_EXCEDIDA""
+7. And o erro aponta para o campo ""<campo>""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,10,9,"Confirmação do pedido",,,no
+39,"Confirmar pedido com cupom BEMVINDO10","Valida a confirmação com desconto de 10% e frete sem desconto (CA01 e CA09), usando o exemplo da documentação: P005 x1, desconto de 10,00 e total de 109,90.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,pedidos,cupom,smoke",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P005 x1""
+4. When eu confirmo o pedido informando o cupom ""BEMVINDO10""
+5. Then a resposta tem status 201
+6. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+7. And o frete de 19.90 é cobrado
+8. And o total do pedido é 109.90
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,11,9,Cupons,,,no
+40,"Confirmar pedido com frete grátis quando o desconto reduz o valor abaixo do limite","Valida na confirmação do pedido que o frete grátis considera o subtotal antes do desconto (CA06 e CA08). Com P001 x1, P008 x3 e BEMVINDO10, o valor após o desconto é 188.91, abaixo de R$ 200,00, e o frete continua grátis.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,pedidos,cupom,frete",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P001 x1, P008 x3""
+4. When eu confirmo o pedido informando o cupom ""BEMVINDO10""
+5. Then a resposta tem status 201
+6. And o cupom é aplicado ao subtotal de 209.90 gerando um desconto de 20.99
+7. And o frete é grátis
+8. And o total do pedido é 188.91
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,11,9,Cupons,,,no
+41,"Aceitar cupom em minúsculas e com espaços nas pontas","Valida que o código do cupom não diferencia maiúsculas de minúsculas e que espaços nas pontas são ignorados na confirmação do pedido (CA02). Exemplo: ""  bemvindo10  "".","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,pedidos,cupom",medium,major,functional,positive,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P005 x1""
+4. When eu confirmo o pedido informando o cupom ""  bemvindo10  ""
+5. Then a resposta tem status 201
+6. And o cupom é aplicado ao subtotal de 100.00 gerando um desconto de 10.00
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,11,9,Cupons,,,no
+42,"Rejeitar pedido com cupom inexistente","Valida que um cupom que não existe gera erro 422 CUPOM_INVALIDO e o pedido não é confirmado (CA03). Nesta rota o comportamento difere do cálculo, que responde 200 sem desconto.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,pedidos,cupom,smoke",high,critical,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P005 x1""
+4. When eu confirmo o pedido informando o cupom ""PROMO50""
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""CUPOM_INVALIDO""
+7. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,11,9,Cupons,,,no
+43,"Rejeitar pedido com cupom expirado","Valida que o cupom VERAO2026, expirado em 31/03/2026, gera erro 422 CUPOM_EXPIRADO e o pedido não é confirmado (CA04).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.
+- O cupom BEMVINDO10 está válido e o cupom VERAO2026 está expirado.",,"api,pedidos,cupom,smoke",high,critical,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que os dados do cliente são válidos
+3. And que o carrinho contém os itens ""P005 x1""
+4. When eu confirmo o pedido informando o cupom ""VERAO2026""
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""CUPOM_EXPIRADO""
+7. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,11,9,Cupons,,,no
+44,"Rejeitar nome sem sobrenome","Valida que um nome com apenas uma palavra é rejeitado com 422 DADOS_INVALIDOS, indicando o campo nome. Esse é o limite da regra de nome e sobrenome.
+Exemplos: ""Maria"" e ""Maria "" (uma palavra com espaço no fim).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,nome",high,major,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o nome ""<nome>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""DADOS_INVALIDOS""
+7. And o erro indica os campos inválidos ""nome""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,13,12,Nome,,,no
+45,"Rejeitar nome vazio ou ausente","Valida que um nome sem conteúdo é rejeitado com 422 DADOS_INVALIDOS, indicando o campo nome.
+Exemplos: """" (string vazia), ""   "" (só espaços) e (ausente).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,nome",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o nome ""<nome>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""DADOS_INVALIDOS""
+7. And o erro indica os campos inválidos ""nome""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,13,12,Nome,,,no
+46,"Rejeitar e-mail com formato inválido","Valida que e-mails com formato claramente inválido são rejeitados com 422 DADOS_INVALIDOS, indicando o campo email.
+Exemplos: maria.exemplo.com (sem @), maria@ (sem domínio), @exemplo.com (sem usuário) e ""maria silva@exemplo.com"" (espaço interno).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,email",high,major,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o e-mail ""<email>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""DADOS_INVALIDOS""
+7. And o erro indica os campos inválidos ""email""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,14,12,Email,,,no
+47,"Rejeitar e-mail vazio ou ausente","Valida que um e-mail sem conteúdo é rejeitado com 422 DADOS_INVALIDOS, indicando o campo email.
+Exemplos: """", ""   "" e (ausente).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,email",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o e-mail ""<email>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""DADOS_INVALIDOS""
+7. And o erro indica os campos inválidos ""email""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,14,12,Email,,,no
+48,"Aceitar CEP com ou sem hífen e retornar sem hífen","Valida que um CEP de 8 dígitos é aceito com ou sem hífen e que a resposta devolve o CEP normalizado, sem hífen.
+Exemplos: 01310100 e 01310-100. Em ambos, o CEP retornado é 01310100.","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,cep",high,major,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o CEP ""<cep>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 201
+6. And o CEP retornado é ""01310100""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,15,12,Cep,,,no
+49,"Rejeitar CEP com quantidade de dígitos diferente de 8","Valida os limites da regra de 8 dígitos: um a menos e um a mais são rejeitados com 422 DADOS_INVALIDOS, indicando o campo cep.
+Exemplos: 0131010 (7 dígitos), 013101000 (9 dígitos), 01310-10 (7 dígitos com hífen) e 01310-1000 (9 dígitos com hífen).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,cep",high,major,functional,negative,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o CEP ""<cep>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""DADOS_INVALIDOS""
+7. And o erro indica os campos inválidos ""cep""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,15,12,Cep,,,no
+50,"Rejeitar CEP com caracteres inválidos","Valida que um CEP com caracteres que não são dígitos, ou com hífen fora do lugar, é rejeitado com 422 DADOS_INVALIDOS. A documentação não define a posição do hífen, então os exemplos de hífen devem ser confirmados.
+Exemplos: 0131010A (letra), ABCDEFGH (só letras), ""01310 100"" (espaço), 0131-0100 e -01310100 (hífen em posição incorreta).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,cep",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o CEP ""<cep>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""DADOS_INVALIDOS""
+7. And o erro indica os campos inválidos ""cep""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,15,12,Cep,,,no
+51,"Rejeitar CEP vazio ou ausente","Valida que um CEP sem conteúdo é rejeitado com 422 DADOS_INVALIDOS, indicando o campo cep.
+Exemplos: """", ""   "" e (ausente).","- A Verzel Store está disponível e a API responde em /api.
+- Os produtos usados no caso estão cadastrados com os preços da documentação.
+- Nenhuma autenticação é necessária.",,"api,pedidos,cliente,cep",medium,major,functional,negative,is-not-automated,draft,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
+2. And que o carrinho contém os itens ""P005 x1""
+3. And que o cliente informa o CEP ""<cep>""
+4. When eu confirmo o pedido
+5. Then a resposta tem status 422
+6. And o erro retornado tem o código ""DADOS_INVALIDOS""
+7. And o erro indica os campos inválidos ""cep""
+8. And nenhum pedido é criado
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+",,,15,12,Cep,,,no
+56,"Adicionar um produto ao carrinho pela vitrine","Fluxo básico de entrada no carrinho: ao clicar em ""Adicionar ao carrinho"" o contador do cabeçalho e o aviso do card são atualizados e o item aparece no carrinho com preço unitário e total do item.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,carrinho,smoke",high,critical,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho está vazio
+2. And que estou na página inicial
+3. When eu adiciono o produto ""Camiseta Essencial"" ao carrinho
+4. Then o sistema informa ""1 no carrinho"" para o produto ""Camiseta Essencial""
+5. And o contador do carrinho no cabeçalho indica 1 item
+6. And o carrinho contém o item ""Camiseta Essencial"" com quantidade 1, ""R$ 59,90 cada"" e total do item ""R$ 59,90""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,17,16,Carrinho,,,no
+57,"Bloquear a 6ª unidade ao adicionar pela vitrine","Valor limite superior inválido (6, CA10). Partição inválida > 5. Com 5 unidades no carrinho, a tentativa de adicionar a 6ª não pode aumentar a quantidade e deve dar feedback ao cliente. A documentação só define a regra (máximo de 5 por pedido, interface e API); a mensagem exata deve ser confirmada.<br/>A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,carrinho,quantidade,smoke,valor-limite,ca10",high,critical,functional,negative,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P001 x4""
+2. And que estou na página inicial
+3. When eu adiciono mais um produto ""Camiseta Essencial""
+4. Then o sistema informa que o limite de 5 unidades por produto foi atingido
+5. And o sistema desabilita o botão de adicionar ao carrinho para o item ""Camiseta Essencial""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,18,17,"Quantidade por produto",,,no
+58,"Bloquear a 6ª unidade ao aumentar pelo botão + no carrinho","Valores limite 4, 5 e 6 no carrinho (CA10): de 4 para 5 o botão ""+"" funciona; de 5 para 6 o sistema não pode aceitar (botão desabilitado). <br/>Deve ser adicionado uma mensagem informando sobre o limite de 5 unidades","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,carrinho,quantidade,valor-limite,ca10",high,critical,functional,negative,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P004 x4""
+2. And que estou na página do carrinho
+3. When eu aumento em 1 unidade a quantidade do produto ""Boné Aba Curva""
+4. Then a quantidade do item passa a 5
+5. And o sistema informa que o limite de 5 unidades por produto foi atingido
+6. And o sistema desabilita o botão de aumentar a quantidade do item ""Boné Aba Curva""
+7. And o resumo exibe subtotal ""R$ 249,50"", desconto ""R$ 0,00"", o frete é grátis (R$ 0,00) e total ""R$ 249,50""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,18,17,"Quantidade por produto",,,no
+59,"Aplicar o cupom BEMVINDO10 em carrinho abaixo do limite de frete grátis","Caminho principal do cupom (CA01). Partição válida: cupom existente e dentro da validade. P002 x1: subtotal 139,90, desconto 10% = 13,99, frete fixo 19,90, total 145,81. Esperada mensagem de sucesso (a API retorna ""Cupom aplicado: 10% de desconto nos produtos.""; o texto exibido na UI deve ser confirmado).","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,cupom,smoke,ca01,ca09",high,critical,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P002 x1""
+2. And que estou na página do carrinho
+3. When eu aplico o cupom ""BEMVINDO10""
+4. Then o sistema informa que o cupom foi aplicado com sucesso
+5. And o resumo exibe subtotal ""R$ 139,90"", desconto ""R$ 13,99"", o frete é ""R$ 19,90"" e total ""R$ 145,81""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,19,16,Cupons,,,no
+60,"Rejeitar cupom inexistente","Partição inválida: código que não corresponde a nenhum cupom (CA03). Mensagem esperada: ""Cupom inválido."". Exemplo: DESCONTO50. Nenhum desconto é aplicado e o frete fixo é mantido.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,cupom,smoke,ca03",high,critical,functional,negative,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P002 x1""
+2. And que estou na página do carrinho
+3. When eu aplico o cupom ""DESCONTO50""
+4. Then o sistema exibe a mensagem ""Cupom inválido.""
+5. And nenhum desconto é aplicado
+6. And o resumo mantém subtotal ""R$ 139,90"", desconto ""R$ 0,00"", frete ""R$ 19,90"" e total ""R$ 159,80""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,19,16,Cupons,,,no
+61,"Rejeitar cupom expirado","Partição inválida: cupom existente, porém fora da validade (CA04). VERAO2026 (15%) expirou em 31/03/2026. Mensagem esperada: ""Cupom expirado.""; nenhum desconto é aplicado (não pode aplicar os 15%).","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,cupom,smoke,ca04",high,critical,functional,negative,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P002 x1""
+2. And que estou na página do carrinho
+3. When eu aplico o cupom ""VERAO2026""
+4. Then o sistema exibe a mensagem ""Cupom expirado.""
+5. And nenhum desconto é aplicado
+6. And o resumo mantém subtotal ""R$ 139,90"", desconto ""R$ 0,00"", frete ""R$ 19,90"" e total ""R$ 159,80""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,19,16,Cupons,,,no
+62,"Recalcular o desconto ao alterar a quantidade com cupom aplicado","Valida que o cupom continua aplicado e é recalculado quando o carrinho muda: P002 de 1 para 2 unidades com BEMVINDO10 (subtotal 279,80, desconto 27,98, frete grátis, total 251,82).","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,cupom,carrinho,ca01,ca09",high,major,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P002 x1""
+2. And que o cupom ""BEMVINDO10"" está aplicado
+3. And que estou na página do carrinho
+4. When eu aumento em 1 unidade a quantidade do produto ""Calça Jeans Slim""
+5. Then o cupom ""BEMVINDO10"" continua aplicado
+6. And o resumo exibe subtotal ""R$ 279,80"", desconto ""R$ 27,98"", o frete é grátis (R$ 0,00) e total ""R$ 251,82""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,19,16,Cupons,,,no
+63,"Cobrar frete fixo e informar o valor faltante abaixo do limite","Partição < R$ 200,00 (CA07). P001 x1: subtotal R$ 59,90, frete R$ 19,90, total R$ 79,80 e aviso de quanto falta para o frete grátis (R$ 140,10).","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,frete,smoke,ca07",medium,critical,functional,positive,is-not-automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P001 x1""
+2. When eu acesso o carrinho
+3. Then o resumo exibe subtotal ""R$ 59,90"", desconto ""R$ 0,00"", o frete é ""R$ 19,90"" e total ""R$ 79,80""
+4. And o sistema exibe o aviso ""Faltam R$ 140,10 para o frete grátis.""
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,20,16,Frete,,,no
+64,"Cobrar frete com subtotal logo abaixo do limite (R$ 199,90)","Valor limite imediatamente abaixo de R$ 200,00 (CA06/CA07). P004 + P005 + P008 = R$ 199,90; faltam R$ 0,10. O frete de R$ 19,90 ainda é cobrado e o total é R$ 219,80.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,frete,valor-limite,ca06,ca07",high,critical,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P004 x1, P005 x1, P008 x1""
+2. When eu acesso o carrinho
+3. Then o resumo exibe subtotal ""R$ 199,90"", desconto ""R$ 0,00"", o frete é ""R$ 19,90"" e total ""R$ 219,80""
+4. And o sistema exibe o aviso ""Faltam R$ 0,10 para o frete grátis.""
+","1. """"
+2. """"
+3. """"
+4. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+",,,20,16,Frete,,,no
+65,"Conceder frete grátis com subtotal exatamente R$ 200,00","Valor limite exato (CA06: ""a partir de R$ 200,00, inclusive""). P005 x2 = 200,00: frete 0,00, total 200,00, sem valor faltante. O texto exibido no lugar do aviso de faltante (ex.: confirmação de frete grátis) deve ser confirmado.
+A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,frete,smoke,valor-limite,a-confirmar,ca06",high,critical,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x2""
+2. When eu acesso o carrinho
+3. Then o resumo exibe subtotal ""R$ 200,00"", desconto ""R$ 0,00"", o frete é grátis (R$ 0,00) e total ""R$ 200,00""
+4. And o sistema não exibe o aviso de valor faltante para o frete grátis
+5. And o sistema indica que o frete é grátis
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,20,16,Frete,,,no
+66,"Manter frete grátis quando o desconto reduz o valor abaixo do limite","CA08: a regra do frete usa o subtotal antes do desconto. Com P001 x1, P008 x3 e BEMVINDO10, o valor após o desconto é 188.91, abaixo de R$ 200,00, e o frete continua grátis.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,frete,cupom,smoke,ca08,ca06",high,critical,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P001 x1, P008 x3""
+2. And que estou na página do carrinho
+3. When eu aplico o cupom ""BEMVINDO10""
+4. Then o resumo exibe subtotal ""R$ 209,90"", desconto ""R$ 20,99"", o frete é grátis (R$ 0,00) e total ""R$ 188,91""
+5. And o sistema não exibe o aviso de valor faltante para o frete grátis
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,20,16,Frete,,,no
+67,"Aplicar o desconto só nos produtos e calcular o faltante sobre o subtotal","CA08 e CA09 no mesmo cenário: P005 x1 com BEMVINDO10 tem subtotal 100,00, desconto 10,00 (só sobre produtos, o frete 19,90 não é reduzido) e total 109,90. O faltante é calculado sobre o subtotal antes do desconto: faltam R$ 100,00 (e não R$ 110,00).","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.",,"e2e,frete,cupom,ca07,ca08,ca09",high,critical,functional,positive,is-not-automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x1""
+2. And que estou na página do carrinho
+3. When eu aplico o cupom ""BEMVINDO10""
+4. Then o resumo exibe subtotal ""R$ 100,00"", desconto ""R$ 10,00"", o frete é ""R$ 19,90"" e total ""R$ 109,90""
+5. And o sistema exibe o aviso ""Faltam R$ 100,00 para o frete grátis.""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,20,16,Frete,,,no
+68,"Exibir no checkout o resumo igual ao do carrinho","Valida que o resumo do checkout (itens, subtotal, desconto, frete e total) é idêntico ao do carrinho, inclusive com cupom aplicado (o checkout não tem campo de cupom, então o desconto vem do carrinho). Exemplo da documentação: P002 x1 + P004 x2 com BEMVINDO10 (239,70 / 23,97 / 0,00 / 215,73). Também confere a informação ""O pagamento é feito na entrega."" e a ausência de etapa de pagamento online.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- O fluxo de checkout (/checkout) exige ao menos um item no carrinho.",,"e2e,checkout,ca01,ca06",high,major,functional,positive,is-not-automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P002 x1, P004 x2""
+2. And que estou na página do carrinho
+3. And que o cupom ""BEMVINDO10"" está aplicado
+4. When eu finalizo a compra
+5. Then o sistema exibe o formulário ""Dados para entrega""
+6. And o resumo do pedido lista ""1x Calça Jeans Slim - R$ 139,90"" e ""2x Boné Aba Curva - R$ 99,80""
+7. And o resumo exibe subtotal ""R$ 239,70"", desconto ""R$ 23,97"", o frete é grátis (R$ 0,00) e total ""R$ 215,73""
+8. And o sistema informa ""O pagamento é feito na entrega.""
+9. And o sistema não apresenta campos de cartão nem etapa de pagamento online
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+",,,21,16,Checkout,,,no
+69,"Exibir erro em todos os campos ao confirmar com o formulário vazio","Valida o envio sem preencher nada: os três campos (nome, e-mail e CEP) devem indicar erro ao mesmo tempo (API: DADOS_INVALIDOS com detalhes em ""campos""), o pedido não é criado e o carrinho permanece intacto.
+A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- O fluxo de checkout (/checkout) exige ao menos um item no carrinho.",,"e2e,checkout",high,major,functional,negative,is-not-automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x1""
+2. And que estou na página de checkout
+3. When eu confirmo o pedido sem informar nenhum dado do cliente
+4. Then o sistema exibe mensagem de erro para os campos ""Nome completo"", ""E-mail"" e ""CEP""
+5. And o pedido não é confirmado
+6. And o sistema mantém o cliente na página de checkout
+7. And o carrinho continua com os mesmos itens e valores
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+",,,21,16,Checkout,,,no
+70,"Rejeitar nome sem sobrenome","Valor limite da regra de nome e sobrenome: 1 palavra é inválida (API: DADOS_INVALIDOS no campo nome). Exemplos: <nome> = ""Maria""; ""Maria "" (uma palavra com espaço no fim). Os demais campos estão válidos, então só o nome deve apontar erro.
+A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- O fluxo de checkout (/checkout) exige ao menos um item no carrinho.",,"e2e,checkout,nome,particao-equivalencia,valor-limite",high,major,functional,negative,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x1""
+2. And que estou na página de checkout
+3. And que o cliente informa o nome ""<nome>""
+4. And que o cliente informa o e-mail ""maria@exemplo.com"" e o CEP ""01310-100""
+5. When eu confirmo o pedido
+6. Then o sistema exibe mensagem de erro para o campo ""Nome completo""
+7. And o pedido não é confirmado
+8. And o sistema mantém o cliente na página de checkout
+9. And os campos ""E-mail"" e ""CEP"" não exibem erro
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+",,,23,22,Nome,,,no
+71,"Rejeitar e-mail com formato inválido","Partições inválidas de formato (API: DADOS_INVALIDOS no campo email). Exemplos: <email> = ""maria.exemplo.com"" (sem @); ""maria@"" (sem domínio); ""@exemplo.com"" (sem usuário); ""maria silva@exemplo.com"" (espaço interno); ""maria@exemplo"" (sem extensão de domínio, o comportamento deve ser confirmado).
+A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- O fluxo de checkout (/checkout) exige ao menos um item no carrinho.",,"e2e,checkout,email,particao-equivalencia",high,major,functional,negative,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x1""
+2. And que estou na página de checkout
+3. And que o cliente informa o nome ""Maria Silva"" e o CEP ""01310-100""
+4. And que o cliente informa o e-mail ""<email>""
+5. When eu confirmo o pedido
+6. Then o sistema exibe mensagem de erro para o campo ""E-mail""
+7. And o pedido não é confirmado
+8. And o sistema mantém o cliente na página de checkout
+9. And os campos ""Nome completo"" e ""CEP"" não exibem erro
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+",,,24,22,Email,,,no
+72,"Rejeitar CEP com 7 ou 9 dígitos (limites da regra)","Valores limite imediatamente fora da regra de 8 dígitos (API: DADOS_INVALIDOS no campo cep). Exemplos: <cep> = ""0131010"" (7); ""013101000"" (9); ""01310-10"" (7 com hífen); ""01310-1000"" (9 com hífen).
+A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- O fluxo de checkout (/checkout) exige ao menos um item no carrinho.",,"e2e,checkout,cep,valor-limite",high,major,functional,negative,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x1""
+2. And que estou na página de checkout
+3. And que o cliente informa o nome ""Maria Silva"" e o e-mail ""maria@exemplo.com""
+4. And que o cliente informa o CEP ""<cep>""
+5. When eu confirmo o pedido
+6. Then o sistema exibe mensagem de erro para o campo ""CEP""
+7. And o pedido não é confirmado
+8. And o sistema mantém o cliente na página de checkout
+9. And os campos ""Nome completo"" e ""E-mail"" não exibem erro
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+7. """"
+8. """"
+9. """"
+",,,25,22,Cep,,,no
+73,"Confirmar pedido sem cupom abaixo do limite de frete grátis","Fluxo completo de compra (fim a fim): adicionar produto, abrir carrinho, finalizar, preencher dados válidos e confirmar. P001 x1: subtotal 59,90, frete 19,90, total 79,80. A confirmação deve exibir o número no formato VZ-000000 e valores iguais ao resumo do checkout. O conteúdo exato da tela de confirmação deve ser conferido na UI.
+A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- O fluxo de checkout (/checkout) exige ao menos um item no carrinho.",,"e2e,pedido,smoke",high,critical,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x1""
+2. And que estou na página do carrinho
+3. When eu finalizo a compra informando um cliente valido
+4. Then o sistema confirma o pedido com número no formato ""VZ-000000""
+5. And o resumo exibe subtotal ""R$ 59,90"", desconto ""R$ 0,00"", o frete é ""R$ 19,90"" e total ""R$ 79,80""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+",,,26,16,"Confirmação do pedido",,,no
+74,"Confirmar pedido com o cupom BEMVINDO10","Fluxo completo com cupom (CA01, CA09). P005 x1 com BEMVINDO10: subtotal 100,00, desconto 10,00, frete 19,90, total 109,90 (exemplo da documentação). Os valores da confirmação devem ser idênticos aos do carrinho e do checkout.<br/>A mensagem/texto exato não consta na documentação e deve ser confirmado na UI.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- O fluxo de checkout (/checkout) exige ao menos um item no carrinho.",,"e2e,pedido,cupom,smoke,ca01,ca09",high,critical,functional,positive,automated,actual,no,e2e,gherkin,"1. Given que o carrinho contém os itens ""P005 x1""
+2. And que estou na página do carrinho
+3. And que o cupom ""BEMVINDO10"" está aplicado
+4. When eu finalizo a compra informando um cliente valido
+5. Then o sistema confirma o pedido com número no formato ""VZ-000000""
+6. And o resumo exibe subtotal ""R$ 100,00"", desconto ""R$ 10,00"", o frete é ""R$ 19,90"" e total ""R$ 109,90""
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+","1. """"
+2. """"
+3. """"
+4. """"
+5. """"
+6. """"
+",,,26,16,"Confirmação do pedido",,,no

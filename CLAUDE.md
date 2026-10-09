@@ -24,7 +24,10 @@ src/
   e2e/steps/*.steps.ts
   utils/               # helpers compartilhados (alias `@utils/*`)
 postman/               # collection + environment (IDs VS-N dos casos de API)
-test-plan/             # export do plano de testes (QAS) em JSON — fonte dos casos E2E; ignorado pelo git
+test-docs/
+  documentacao-testes-qase.csv   # plano de testes (Qase) — fonte dos casos VS-N; versionado
+  defeitos-encontrados.csv       # defeitos abertos e os VS-N que os reproduzem
+  registro-testes-manuais/       # PDFs com o registro das execuções manuais (evidência)
 .features-gen/         # GERADO por `bddgen` — nunca editar nem commitar
 reports/, playwright-report/, test-results/   # gerados — nunca commitar
 ```
@@ -45,16 +48,20 @@ Projetos Playwright: `api`, `e2e-chromium`, `e2e-firefox`, `e2e-webkit`. Cada ca
 
 Sempre rode via os scripts `npm run …` (eles executam `bddgen` antes). Rodar `playwright test` direto usa specs gerados desatualizados. Para validar tipos: `npx tsc --noEmit`.
 
-## Plano de testes (`test-plan/`) — fonte dos casos E2E
+## Plano de testes (`test-docs/documentacao-testes-qase.csv`) — fonte dos casos
 
-`test-plan/*.json` é o export do plano de testes do QAS (ignorado pelo git; pode haver mais de um arquivo — use o mais recente). **Antes de montar feature, steps ou Page Object de um caso `VS-N`, leia o caso nesse arquivo.** O `id` numérico do caso é o `N` do `VS-N`.
+`test-docs/documentacao-testes-qase.csv` é o export do plano de testes do Qase (arquivo único, versionado). **Antes de montar feature, steps ou Page Object de um caso `VS-N`, leia o caso nesse arquivo.** O `v2.id` do caso é o `N` do `VS-N`.
 
-- Estrutura: `suites[]` aninhadas (`title`, `suites`, `cases`); cada caso tem `id`, `title`, `description`, `preconditions`, `priority`, `layer` (`api`/`e2e`), `tags` e `steps[]` (`keyword` + `text`, já em Gherkin pt-BR).
-- Extrair um caso (arquivo é grande; não leia inteiro):
-  `node -e 'const d=JSON.parse(require("fs").readFileSync("test-plan/<arquivo>.json","utf8"));(function w(s){for(const x of s){for(const c of x.cases||[])if(c.id===57)console.log(JSON.stringify(c,null,1));w(x.suites||[])}})(d.suites)'`
-- Use `title` como título do cenário, `tags` como tags (`@VS-N` + as do caso), `steps` como base do Gherkin, `preconditions` para o `Given`/estado inicial e `description` para a intenção. Respeite a redação dos steps do plano, ajustando só para reutilizar steps existentes (`npm run steps`).
+- Estrutura: uma linha por caso (as primeiras linhas só definem suítes, sem conteúdo). Colunas úteis: `v2.id`, `title`, `description`, `preconditions`, `priority`, `layer` (`api`/`e2e`), `tags` (separadas por vírgula, sem `@`), `steps_actions` (Gherkin pt-BR numerado: `1. Given …\n2. And …`; remova a numeração ao portar) e `suite`/`suite_parent_id` (hierarquia). `steps_result` e `steps_data` não trazem conteúdo útil.
+- Células têm vírgulas e quebras de linha entre aspas, então não use `split(',')`. Extrair um caso (arquivo é grande; não leia inteiro; troque `57` pelo `N`):
+  `node -e 'const t=require("fs").readFileSync("test-docs/documentacao-testes-qase.csv","utf8"),R=[];let r=[],f="",q=0;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==="\""){if(t[i+1]==="\""){f+=c;i++}else q=0}else f+=c}else if(c==="\"")q=1;else if(c===",")r.push(f),f="";else if(c==="\n")r.push(f.replace(/\r$/,"")),R.push(r),r=[],f="";else f+=c}const h=R[0],x=R.find(a=>a[0]==="57");console.log(JSON.stringify(Object.fromEntries(h.map((k,i)=>[k,x[i]])),null,1))'`
+- Use `title` como título do cenário, `tags` como tags (`@VS-N` + as do caso), `steps_actions` como base do Gherkin, `preconditions` para o `Given`/estado inicial e `description` para a intenção. Respeite a redação dos steps do plano, ajustando só para reutilizar steps existentes (`npm run steps`).
 - Se `description`/steps indicarem dado a confirmar (ex.: "mensagem exata deve ser confirmada na UI"), confirme na UI real e **avise o usuário** do que foi observado; não invente.
-- Casos E2E vivem em `suites > e2e > …` (`layer: "e2e"`); os de API também estão no plano, além do Postman.
+- Casos E2E têm `layer` = `e2e` (suíte raiz `e2e`); os de API têm `layer` = `api`, além do Postman.
+
+**Registro manual e defeitos** (`test-docs/`, somente leitura):
+- `registro-testes-manuais/*.pdf` — evidência das execuções manuais por prioridade e camada. Consulte para ver o comportamento já observado antes de confirmar uma mensagem na UI; não substitui a verificação real contra a aplicação.
+- `defeitos-encontrados.csv` — defeitos abertos (`id`, `title`, `test case id` com os `VS-N` afetados, `actual result`, `severity`, `status`). Cenário que reproduz um defeito conhecido leva `@bug`. Ao achar um bug novo, avise o usuário para registrá-lo (nasce no Qase); não afrouxe o assert.
 
 ## Rastreabilidade (Postman ↔ Gherkin)
 
@@ -100,7 +107,7 @@ Os casos de teste têm IDs `VS-N` (ex.: `VS-21`), definidos na collection Postma
 
 ## Como trabalhar neste repositório (Claude Code)
 
-- **Leia antes de escrever:** olhe a feature, os steps e a fixture da camada afetada e o caso `VS-N` correspondente — no `test-plan/` (E2E e API) e/ou na collection Postman (API).
+- **Leia antes de escrever:** olhe a feature, os steps e a fixture da camada afetada e o caso `VS-N` correspondente — no `test-docs/documentacao-testes-qase.csv` (E2E e API) e/ou na collection Postman (API).
 - **Mudanças pequenas e verificáveis:** adicione um cenário, rode `npm run test:api` (ou `test:e2e`) e só então avance. Reporte falhas com a saída real; não diga que passou sem rodar.
 - **Falha de teste ≠ ajustar o teste:** se o cenário falha contra a aplicação, diferencie bug da aplicação (reporte, marque `@bug`/documente) de erro do teste. Nunca afrouxe um assert só para ficar verde.
 - **Não chute o contrato da API:** verifique o comportamento real com uma chamada (`curl`/Postman) antes de fixar o esperado, e confirme com o usuário se divergir da especificação.
