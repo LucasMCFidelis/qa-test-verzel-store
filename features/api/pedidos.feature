@@ -23,7 +23,7 @@ Feature: Pedidos
     Then a resposta tem status 201
     And o resumo de valores é idêntico ao do cálculo do mesmo carrinho
 
-  @VS-75 @quantidade @smoke
+  @VS-75 @quantidade @smoke @bug
   Scenario Outline: Rejeitar pedido com quantidade de produtos acima do limite
     Given que os dados do cliente são válidos
     And que o carrinho contém os itens "<itens>"
