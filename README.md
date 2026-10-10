@@ -18,7 +18,7 @@
 
 - [1. Entregas](#1-entregas)
 - [2. Cenários e Gherkin](#2-cenários-e-gherkin)
-- [3. Execução manual e Exploratoria](#3-execução-manual-e-exploratoria)
+- [3. Execução manual e exploratória](#3-execução-manual-e-exploratória)
 - [4. Bugs encontrados](#4-bugs-encontrados)
 - [5. Como rodar a automação](#5-como-rodar-a-automação)
   - [Passo 1 — Clonar repositório](#passo-1--clonar-repositório)
@@ -38,9 +38,9 @@ O plano de testes foi levantado a partir da documentação e mantido no **Qase**
 | Entregável                                    | Onde está                                                                                                                                                                                                                        |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Cenários de teste (Gherkin)                   | [`test-docs/documentacao-testes-qase.csv`](test-docs/documentacao-testes-qase.csv) (plano) e [`features/`](features) (automatizados)                                                                                             |
-| Execução manual com resultado de cada cenário | [`test-docs/registro-testes-manuais/`](test-docs/registro-testes-manuais) (PDFs das rodadas roteirizadas e CSV da exploratória)                                                                                                  |
+| Execução manual com resultado de cada cenário | [`test-docs/registro-testes-manuais/`](test-docs/registro-testes-manuais) (PDF de cada rodada; relatórios públicos do Qase como consulta online)                                                                                                    |
 | Report dos bugs                               | Issues [#1](https://github.com/LucasMCFidelis/qa-test-verzel-store/issues/1) a [#6](https://github.com/LucasMCFidelis/qa-test-verzel-store/issues/6); resumo em [`defeitos-encontrados.csv`](test-docs/defeitos-encontrados.csv) |
-| Evidências da execução                        | PDFs de `registro-testes-manuais/` (passos com capturas de tela) e anexos das issues                                                                                                                                             |
+| Evidências da execução                        | PDFs de `registro-testes-manuais/` (passos com capturas de tela, incluindo a exploratória) e anexos das issues                                                                                                                                             |
 | Automação com Playwright                      | 76 testes (53 API + 23 E2E) em [`features/`](features) e [`src/`](src)                                                                                                                                                           |
 | Collection Postman                            | [`postman/`](postman)                                                                                                                                                                                                            |
 
@@ -53,23 +53,23 @@ O plano de testes foi levantado a partir da documentação e mantido no **Qase**
 | API    | 57             | 36 (53 testes, contando os `Examples`) |
 | E2E    | 23 (19 roteirizados + 4 exploratórios) | 15 (23 testes)         |
 
-Os exploratórios (`VS-77` a `VS-80`) não são automatizados: ficam no Qase, com o registro da execução em CSV.
+Os exploratórios (`VS-77` a `VS-80`) não são automatizados: ficam no Qase, com o registro da execução em PDF.
 
 Tags: `@VS-N` (caso), `@api`/`@e2e` (camada), `@smoke`/`@regressao` (suíte) e `@bug` (reproduz defeito aberto).
 
 ---
 
-## 3. Execução manual e Exploratoria
+## 3. Execução manual e exploratória
 
-Executada na Verzel Store v2.3.0. As rodadas roteirizadas são de 07/10/2026 e a exploratória, de 09/10/2026. Cada rodada tem um relatório público no Qase, com os passos, o status e os comentários de cada caso.
+Executada na Verzel Store v2.3.0. As rodadas roteirizadas são de 07/10/2026 e a exploratória, de 09/10/2026. O PDF de cada rodada é a evidência permanente: traz os passos, o status e as capturas de tela de cada caso. Os relatórios públicos do Qase são uma versão online para consulta e **expiram em 30 dias**.
 
-| Rodada                                                                                                    | Casos  | Passou | Falhou           |
-| --------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------- |
-| [API — prioridade alta](https://app.qase.io/public/report/89003f57fefe2a58f1d55ec8f44b3f8f615471c3)       | 26     | 24     | 2 (VS-22, VS-29) |
-| [API — complementares](https://app.qase.io/public/report/3ae4d3ff278ca31273d21d835c8e5d1df862203c)        | 30     | 28     | 2 (VS-35, VS-75) |
-| [E2E — prioridade alta](https://app.qase.io/public/report/a4409239f6543a6f75dd4f79a0e0933f2a894bc7)       | 19     | 18     | 1 (VS-65)        |
-| [Exploratória](https://app.qase.io/public/report/c95cb215b3b927122a39da7ab732bcf9c406414c)                | 4      | 2      | 2 (VS-78, VS-80) |
-| **Total**                                                                                                 | **79** | **72** | **7**            |
+| Rodada                                                                                                      | Casos  | Passou | Falhou           | Qase (expira em 30 dias)                                                                    |
+| ----------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------- | ------------------------------------------------------------------------------------------- |
+| [API — prioridade alta](test-docs/registro-testes-manuais/VS-Testes%20api%20-%20prioridade%20alta.pdf)       | 26     | 24     | 2 (VS-22, VS-29) | [relatório](https://app.qase.io/public/report/89003f57fefe2a58f1d55ec8f44b3f8f615471c3)       |
+| [API — complementares](test-docs/registro-testes-manuais/VS-Testes%20api%20-%20complementares.pdf)           | 30     | 28     | 2 (VS-35, VS-75) | [relatório](https://app.qase.io/public/report/3ae4d3ff278ca31273d21d835c8e5d1df862203c)       |
+| [E2E — prioridade alta](test-docs/registro-testes-manuais/VS-Testes%20e2e%20-%20prioridade%20alta.pdf)       | 19     | 18     | 1 (VS-65)        | [relatório](https://app.qase.io/public/report/a4409239f6543a6f75dd4f79a0e0933f2a894bc7)       |
+| [Exploratória](test-docs/registro-testes-manuais/VS-Teste%20explorat%C3%B3rio.pdf)                           | 4      | 2      | 2 (VS-78, VS-80) | [relatório](https://app.qase.io/public/report/c95cb215b3b927122a39da7ab732bcf9c406414c)       |
+| **Total**                                                                                                   | **79** | **72** | **7**            |                                                                                             |
 
 O `VS-76` foi criado depois, a partir do bug #1, e é coberto pelo Postman e pela automação. Os exploratórios `VS-77` a `VS-80` foram criados na sequência; `VS-78` e `VS-80` originaram os bugs #3 a #6.
 
