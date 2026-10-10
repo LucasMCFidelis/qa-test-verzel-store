@@ -25,6 +25,7 @@ v2.id,title,description,preconditions,postconditions,tags,priority,severity,type
 ,,,,,,,,,,,,,,,,,,,,24,22,Email,1
 ,,,,,,,,,,,,,,,,,,,,25,22,Cep,1
 ,,,,,,,,,,,,,,,,,,,,26,16,"Confirmação do pedido",1
+,,,,,,,,,,,,,,,,,,,,28,,exploratorio,1
 1,"Listar os produtos disponíveis com status 200 e campos esperados","Valida que a rota GET /api/produtos retorna os produtos disponíveis no catálogo com status 200, que a lista não está vazia e que cada produto possui os campos esperados (id, nome, descricao, categoria e preco), com preço maior que zero. O caso não depende da quantidade de produtos cadastrados.","- A Verzel Store está disponível e a API responde em /api. 
 - Há ao menos um produto cadastrado no catálogo. 
 - Nenhuma autenticação é necessária.",,"produtos,smoke,api",high,critical,functional,positive,automated,actual,no,api,gherkin,"1. Given que a API da Verzel Store está disponível
@@ -1770,3 +1771,142 @@ A mensagem/texto exato não consta na documentação e deve ser confirmado na UI
 5. """"
 6. """"
 ",,,26,16,"Confirmação do pedido",,,no
+77,"Explorar a navegação completa do carrinho","Missão: explorar o ciclo completo do carrinho (remover item, esvaziar, voltar do checkout e abrir o carrinho depois da compra) para descobrir itens perdidos, valores desatualizados e pedidos refeitos sem querer.
+Tempo limite: 30 minutos.
+Fique atento a: contador do cabeçalho diferente do carrinho, cupom aplicado sem aparecer na tela, pedido duplicado, erro no Console.
+As ideias dos passos são ponto de partida; desvios devem ser anotados no resultado da execução.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- DevTools aberto (Console e Network) para registrar erros e respostas da API.",,"e2e,exploratorio,navegacao,carrinho,checkout,pedido",high,major,exploratory,positive,is-not-automated,actual,no,e2e,classic,"1. ""Com P001 x2, P004 x1 e P005 x1 no carrinho, remover um item por vez""
+2. ""Remover o \u00faltimo item do carrinho""
+3. ""Com P007 x1, P001 x1 e BEMVINDO10 aplicado, remover a Jaqueta Corta-Vento""
+4. ""Esvaziar o carrinho com itens e cupom aplicado e depois adicionar um produto""
+5. ""No checkout, com cupom aplicado e formul\u00e1rio preenchido, clicar em Voltar ao carrinho e retornar ao checkout""
+6. ""Repetir a volta do checkout ao carrinho pelo bot\u00e3o voltar do navegador""
+7. ""Confirmar um pedido e abrir o carrinho pelo cabe\u00e7alho""
+8. ""Na tela de confirma\u00e7\u00e3o, usar voltar do navegador e recarregar a p\u00e1gina (F5)""
+9. ""Ap\u00f3s a compra, adicionar um produto e seguir ao checkout""
+","1. ""Subtotal, frete, aviso de faltante e contador do cabe\u00e7alho s\u00e3o atualizados a cada remo\u00e7\u00e3o""
+2. ""Carrinho exibe estado vazio e n\u00e3o permite seguir para o checkout sem itens""
+3. ""Frete volta a R$ 19,90, desconto passa a R$ 5,99 e total a R$ 73,81""
+4. ""Itens e cupom s\u00e3o removidos; o cupom n\u00e3o reaparece ao adicionar novo produto""
+5. ""Itens, quantidades e cupom continuam iguais; comportamento dos dados digitados \u00e9 registrado""
+6. ""Carrinho e cupom continuam coerentes, sem itens duplicados""
+7. ""Carrinho vazio e contador do cabe\u00e7alho zerado""
+8. ""N\u00e3o \u00e9 poss\u00edvel confirmar o mesmo pedido de novo sem querer; comportamento do n\u00famero do pedido \u00e9 registrado""
+9. ""Nenhum cupom, item ou dado do cliente do pedido anterior \u00e9 reaproveitado""
+","1. ""P001 x2, P004 x1, P005 x1""
+2. """"
+3. ""P007 x1, P001 x1, cupom BEMVINDO10""
+4. ""P002 x1, cupom BEMVINDO10""
+5. ""Maria Silva, maria@exemplo.com, 01310-100""
+6. """"
+7. ""P001 x1""
+8. """"
+9. ""P004 x1""
+",,,28,,exploratorio,,,no
+78,"Explorar entradas atípicas no checkout","Missão: explorar os campos do checkout com caracteres fora do comum para descobrir o que a aplicação aceita, o que recusa e se a tela e a API concordam.<br/>Tempo limite: 25 minutos.<br/>A documentação só exige nome e sobrenome e não define caracteres permitidos; os resultados esperados são uma proposta e os itens marcados para confirmar viram perguntas para o time.<br/>Testar cada entrada com os outros campos válidos (Maria Silva, maria@exemplo.com, 01310-100), digitando e colando.<br/>Fique atento a: alerta JavaScript executado, mensagem genérica que não diz o que corrigir, dado aceito na tela e recusado pela API sem explicação.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- DevTools aberto (Console e Network) para registrar erros e respostas da API.
+- O carrinho contém P005 x1 e a página de checkout está aberta.",,"e2e,exploratorio,checkout,cliente,nome,email,cep,particao-equivalencia",medium,major,exploratory,negative,is-not-automated,actual,no,e2e,classic,"1. ""Informar nome com acentos e cedilha""
+2. ""Informar nome com ap\u00f3strofo""
+3. ""Informar nome com h\u00edfen""
+4. ""Informar nome com espa\u00e7os duplos e espa\u00e7os nas pontas""
+5. ""Informar nome com arroba""
+6. ""Informar nome com ponto de abrevia\u00e7\u00e3o""
+7. ""Informar nome s\u00f3 com iniciais""
+8. ""Informar nome com n\u00fameros e com emoji""
+9. ""Informar nome com HTML ou script""
+10. ""Informar nome com 300 caracteres""
+11. ""Informar e-mail em mai\u00fasculas com espa\u00e7os nas pontas""
+12. ""Informar e-mail com dois arrobas e com ponto duplo""
+","1. ""Pedido aceito""
+2. ""Aceito (confirmar regra com o time)""
+3. ""Aceito (confirmar regra com o time)""
+4. ""Aceito, com espa\u00e7os extras removidos na confirma\u00e7\u00e3o""
+5. ""Recusado com mensagem junto ao campo Nome completo""
+6. ""Aceito""
+7. ""Recusado com mensagem junto ao campo Nome completo""
+8. ""Recusado com mensagem junto ao campo Nome completo""
+9. ""Recusado ou exibido como texto; nenhum script \u00e9 executado""
+10. ""Recusado ou limitado sem quebrar o layout da confirma\u00e7\u00e3o""
+11. ""Aceito e normalizado""
+12. ""Recusado com mensagem junto ao campo E-mail""
+","1. ""Jos\u00e9 Concei\u00e7\u00e3o""
+2. ""Maria D'\u00c1vila""
+3. ""Ana-Clara Souza""
+4. ""Maria  Silva; '  Maria Silva  '""
+5. ""M@ri@ Silva""
+6. ""Maria S.""
+7. ""M S""
+8. ""Maria Silva 2; M4ria Silva; Maria \ud83d\ude00 Silva""
+9. ""<b>Maria<\/b> Silva; <img src=x onerror=alert(1)> Silva""
+10. ""300 caracteres""
+11. ""' MARIA@EXEMPLO.COM '""
+12. ""maria@@exemplo.com; maria..silva@exemplo.com""
+",,,28,,exploratorio,,,no
+79,"Explorar a responsividade e a usabilidade do fluxo de compra","Missão: percorrer o fluxo de compra em celular, tablet e desktop para descobrir quebras de layout e pontos confusos para o cliente.<br/>Tempo limite: 20 minutos.<br/>Usar o modo dispositivo do DevTools; acessibilidade fica fora deste caso.<br/>Fique atento a: botão principal fora da tela sem indicação, valores quebrando em duas linhas, mensagens escondidas abaixo da dobra.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- DevTools aberto (Console e Network) para registrar erros e respostas da API.",,"e2e,exploratorio,responsividade,usabilidade",medium,minor,exploratory,positive,is-not-automated,actual,no,e2e,classic,"1. ""Percorrer Produtos, Carrinho, Finalizar compra e confirma\u00e7\u00e3o em 375 px, 768 px e 1280 px""
+2. ""No celular, verificar o contador do carrinho e os bot\u00f5es +, - e Remover""
+3. ""Girar a tela (retrato e paisagem) no meio do preenchimento do checkout""
+4. ""Aplicar zoom de 200% no desktop e conferir o resumo de valores e o formul\u00e1rio""
+5. ""Provocar mensagens de cupom, frete e erro de campo e ler cada uma""
+6. ""Comparar os termos subtotal, desconto, frete e total no carrinho, checkout e confirma\u00e7\u00e3o""
+7. ""Verificar se o aviso de faltante para o frete gr\u00e1tis e a mensagem do cupom s\u00e3o f\u00e1ceis de notar, inclusive no celular""
+8. ""Antes de confirmar o pedido, procurar a informa\u00e7\u00e3o sobre a forma de pagamento""
+","1. ""Sem rolagem horizontal, texto cortado ou elementos sobrepostos""
+2. ""Elementos vis\u00edveis e f\u00e1ceis de tocar sem acertar o bot\u00e3o vizinho""
+3. ""Dados digitados s\u00e3o mantidos e o layout se ajusta""
+4. ""Conte\u00fado continua leg\u00edvel e utiliz\u00e1vel""
+5. ""Cada mensagem diz o que aconteceu e o que fazer a seguir""
+6. ""Mesmos termos e mesma ordem nas tr\u00eas telas""
+7. ""Avisos vis\u00edveis sem rolagem excessiva""
+8. ""Fica claro que o pagamento \u00e9 feito na entrega""
+","1. ""375 px; 768 px; 1280 px""
+2. ""375 px""
+3. """"
+4. ""Zoom 200%""
+5. """"
+6. """"
+7. """"
+8. """"
+",,,28,,exploratorio,,,no
+80,"Explorar a perda de conexão no carrinho e a finalização após reconectar","Missão: explorar o carrinho sem conexão, mexendo em quantidade e cupom, e finalizar a compra depois que a conexão voltar, para descobrir valores desatualizados, mensagens enganosas e pedidos com dados diferentes do que o cliente vê.<br/>Tempo limite: 20 minutos.<br/>Os cálculos são feitos pela API: sem conexão, a tela não consegue recalcular nem validar o cupom, mas deve avisar o cliente e não exibir valores errados como se estivessem certos.<br/>Fique atento a: Cupom inválido. exibido por falha de rede, quantidade na tela diferente da enviada à API, botão travado após a conexão voltar, pedido duplicado.","- A Verzel Store (front-end) está acessível no navegador.
+- O carrinho da aba está vazio (usar uma aba ou contexto de navegador novo, pois o carrinho é guardado por aba).
+- Produtos, preços e cupons conforme a documentação do card VZS-142 (BEMVINDO10 válido e VERAO2026 expirado).
+- Nenhuma autenticação é necessária.
+- DevTools aberto (Console e Network) para registrar erros e respostas da API.
+- Simular a queda pelo DevTools > Network > Offline e a volta por No throttling.",,"e2e,carrinho,cupom,checkout,pedido",medium,major,exploratory,negative,is-not-automated,actual,no,e2e,classic,"1. ""Adicionar P002 x1 e P004 x1 e abrir o carrinho""
+2. ""Ativar DevTools > Network > Offline e clicar em + no Bon\u00e9 Aba Curva""
+3. ""Ainda offline, aplicar o cupom BEMVINDO10""
+4. ""Ainda offline, usar -, Remover e clicar em + at\u00e9 alcan\u00e7ar 5 unidades""
+5. ""Ainda offline, clicar em Finalizar compra""
+6. ""Restaurar a conex\u00e3o (No throttling)""
+7. ""Finalizar a compra com dados v\u00e1lidos e conferir o POST \/api\/pedidos no Network""
+8. ""Varia\u00e7\u00e3o: ficar offline no checkout, clicar em Confirmar pedido, restaurar a conex\u00e3o e confirmar de novo""
+9. ""Varia\u00e7\u00e3o: recarregar a p\u00e1gina (F5) offline e recarregar outra vez com a conex\u00e3o de volta""
+","1. ""Resumo de partida: subtotal R$ 189,80, desconto R$ 0,00, frete R$ 19,90 e total R$ 209,70""
+2. ""A tela avisa a falta de conex\u00e3o e n\u00e3o exibe um resumo errado como se estivesse correto""
+3. ""O cupom n\u00e3o \u00e9 aplicado e a tela informa que n\u00e3o foi poss\u00edvel valid\u00e1-lo por falta de conex\u00e3o, sem exibir Cupom inv\u00e1lido.""
+4. ""As quantidades n\u00e3o passam de 5 e a tela avisa que o resumo n\u00e3o p\u00f4de ser recalculado""
+5. ""O checkout n\u00e3o exibe resumo desatualizado como se estivesse correto (bloqueia o avan\u00e7o ou avisa o cliente)""
+6. ""O resumo do carrinho e do checkout \u00e9 recalculado e corresponde \u00e0s quantidades exibidas""
+7. ""Pedido confirmado no formato VZ-000000, com as mesmas quantidades e valores exibidos no checkout""
+8. ""Mensagem amig\u00e1vel na falha; depois, um \u00fanico pedido confirmado com os mesmos valores exibidos no checkout""
+9. ""O carrinho guardado na aba continua dispon\u00edvel e o resumo \u00e9 recalculado""
+","1. ""P002 x1, P004 x1""
+2. ""Offline""
+3. ""BEMVINDO10""
+4. ""Offline""
+5. ""Offline""
+6. ""No throttling""
+7. ""Maria Silva, maria@exemplo.com, 01310-100""
+8. ""Offline""
+9. ""Offline""
+",,,28,,exploratorio,,,no
